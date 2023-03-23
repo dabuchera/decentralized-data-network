@@ -1,0 +1,6 @@
+type Materialpassport @createModel(accountRelation: LIST, description: "Materialpassport") {
+  author: DID! @documentAccount
+  version: CommitID! @documentVersion
+  name: String! @string(minLength: 0, maxLength: 100)
+  completed: Boolean! @boolean
+}

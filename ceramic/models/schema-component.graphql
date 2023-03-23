@@ -1,0 +1,49 @@
+type Materialpassport @loadModel(id: "kjzl6hvfrbw6c95mqxz3bhnv35rhtb9senbr5jyb3s87vei7dvu38hkzhehqzhw") {
+  id: ID!
+}
+
+type Component @createModel(accountRelation: LIST, description: "Component") {
+  author: DID! @documentAccount
+  mpID: StreamID! @documentReference(model: "Materialpassport")
+  mp: Materialpassport! @relationDocument(property: "mpID")
+  title: String! @string(minLength: 0, maxLength: 100)
+  functionalLayer: FunctionalLayer!
+  actor: Actor!
+  lifecyclephase: LCP!
+  property: String @string(minLength: 0, maxLength: 100)
+  version: CommitID! @documentVersion
+}
+
+enum FunctionalLayer {
+  BUILDING
+  COMPONENT
+  MATERIAL
+  MODULE
+  PRODUCT
+  STOREY
+}
+
+enum Actor {
+  ARCHITECT
+  CONSTRUCTION_CONTRACTOR
+  DECONSTRUCTOR
+  LOGISTIC_MANAGER
+  MAINTENANCE_CONTRACTOR
+  PRODUCT_INSTALLER
+  PRODUCT_MANUFACTURER
+  PRODUCT_SUPPLIER
+  PROPERTY_USER
+}
+
+enum LCP {
+  DISASSEMBLY
+  REMANUFACTURING
+  CONSTRUCTION
+  ASSEMBLY
+  DESIGN
+  MAINTENANCE
+  MANUFACTURING
+  OPERATION
+  REUSE
+  TRANSPORT_LOGISTIC
+}
