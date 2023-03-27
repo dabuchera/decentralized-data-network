@@ -10,14 +10,17 @@ export function SideBarNav() {
         <NavLink href="/dashboard" icon={RiDashboardLine}>
           Dashboard
         </NavLink>
+        <NavLink href="/testpage" icon={RiDashboardLine}>
+          Test
+        </NavLink>
       </NavSection>
 
       <NavSection title="PERSONAL">
+      <NavLink href="/materialpassports" icon={RiLayout5Line}>
+          Materialpassports
+        </NavLink>
         <NavLink href="/components" icon={RiArtboard2Line}>
           Components
-        </NavLink>
-        <NavLink href="/materialpassport" icon={RiLayout5Line}>
-          Materialpassports
         </NavLink>
       </NavSection>
 

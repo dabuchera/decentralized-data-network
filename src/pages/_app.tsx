@@ -1,23 +1,25 @@
 import type { AppProps } from 'next/app'
-import { makeServer } from '../services/mirage'
-import { ReactQueryDevtools } from 'react-query/devtools'
-import { QueryClientProvider } from 'react-query'
-import { SideBarDrawerProvider } from '../context/SidebarDrawerContext'
-import { ReactRelayContext } from 'react-relay'
-import { environment } from '@/lib/relay'
+import { DIDSession } from 'did-session';
+import { useEffect } from 'react';
+import { QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
+import { ReactRelayContext } from 'react-relay';
 
-import { theme } from '../styles/theme'
-import { Button, ChakraProvider } from '@chakra-ui/react'
-import { queryClient } from '../services/queryClient'
-import { useEffect } from 'react'
-import { useAuth } from '@/services/hook/useAuth'
-import { UserData, UserSession } from '@stacks/connect'
-import { getAccountIdByNetwork, StacksWebAuth } from '@didtools/pkh-stacks'
-import { DIDSession } from 'did-session'
-import { composeClient, loadDIDSession } from '@/lib/composeDB'
+import { composeClient, loadDIDSession } from '@/lib/composeDB';
+import { environment } from '@/lib/relay';
+import { useAuth } from '@/services/hook/useAuth';
+import { Button, ChakraProvider } from '@chakra-ui/react';
+import { getAccountIdByNetwork, StacksWebAuth } from '@didtools/pkh-stacks';
+import { UserData, UserSession } from '@stacks/connect';
+
+import { SideBarDrawerProvider } from '../context/SidebarDrawerContext';
+import { makeServer } from '../services/mirage';
+import { queryClient } from '../services/queryClient';
+import { theme } from '../styles/theme';
 
 if (process.env.NODE_ENV === 'development') {
-  makeServer()
+  // Dies auskommentieren sodass der graphql stuff läuft
+  // makeServer()
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -51,7 +53,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <ReactRelayContext.Provider value={{ environment }}>
-      <QueryClientProvider client={queryClient}>
+      {/* <QueryClientProvider client={queryClient}> */}
         <ChakraProvider theme={theme}>
           <SideBarDrawerProvider>
             <Component {...pageProps} />
@@ -59,7 +61,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </ChakraProvider>
 
         {/* <ReactQueryDevtools /> */}
-      </QueryClientProvider>
+      {/* </QueryClientProvider> */}
     </ReactRelayContext.Provider>
   )
 }

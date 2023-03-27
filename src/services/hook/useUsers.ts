@@ -1,12 +1,13 @@
 import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
-import { useLazyLoadQuery } from 'react-relay';
+import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
 import { api } from '../api';
 
 type User = {
   id: string;
+  author_id: string;
   name: string;
-  email: string;
-  createdAt: string;
+  completed: boolean;
+  version: string;
 };
 
 type GetUsersResponse = {
@@ -14,7 +15,9 @@ type GetUsersResponse = {
   totalCount: number;
 };
 
-export async function getUsers(page: number): Promise<GetUsersResponse> {
+// export async function getUsers(page: number): Promise<Materialpassport> {
+export async function getUsers(page: number) {
+
   const { data, headers } = await api.get('users', {
     params: {
       page,
@@ -39,9 +42,11 @@ export async function getUsers(page: number): Promise<GetUsersResponse> {
   console.log(data)
 
   return { users, totalCount };
+  // return null
 }
 
 export function useUsers(page: number, options?: UseQueryOptions) {
+  // return null
   return useQuery(['users', page], () => getUsers(page), {
     staleTime: 1000 * 60 * 10, // 10 minutes
     ...options,
