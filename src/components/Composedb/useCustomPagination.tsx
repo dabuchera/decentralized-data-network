@@ -1,5 +1,5 @@
-import { useLazyLoadQuery, useFragment, graphql, GraphQLTaggedNode } from 'react-relay';
 import { useCallback, useState } from 'react';
+import { graphql, GraphQLTaggedNode, useFragment, useLazyLoadQuery } from 'react-relay';
 
 export default function useCustomPagination(fragmentNode, fragmentRef, query, count) {
   const [cursor, setCursor] = useState(null);

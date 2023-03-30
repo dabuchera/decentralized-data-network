@@ -1,20 +1,18 @@
 import type { AppProps } from 'next/app'
-import { DIDSession } from 'did-session';
+import { Head } from 'next/document';
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
 import { ReactRelayContext } from 'react-relay';
 
-import { composeClient, loadDIDSession } from '@/lib/composeDB';
+import { Header } from '@/components/Header';
+import Layout from '@/components/Layout';
+import { Sidebar } from '@/components/Sidebar';
+import { loadDIDSession } from '@/lib/composeDB';
 import { environment } from '@/lib/relay';
 import { useAuth } from '@/services/hook/useAuth';
-import { Button, ChakraProvider } from '@chakra-ui/react';
-import { getAccountIdByNetwork, StacksWebAuth } from '@didtools/pkh-stacks';
-import { UserData, UserSession } from '@stacks/connect';
+import { Button, ChakraProvider, Flex } from '@chakra-ui/react';
 
 import { SideBarDrawerProvider } from '../context/SidebarDrawerContext';
-import { makeServer } from '../services/mirage';
-import { queryClient } from '../services/queryClient';
 import { theme } from '../styles/theme';
 
 if (process.env.NODE_ENV === 'development') {
@@ -24,8 +22,16 @@ if (process.env.NODE_ENV === 'development') {
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { userSession, setUserData, authenticate, userData } = useAuth()
+  const router = useRouter()
 
   useEffect(() => {
+    console.log('_app.tsx -> useEffect')
+    console.log('userSession')
+    console.log(userSession)
+
+    console.log('userData')
+    console.log(userData)
+
     if (userSession.isSignInPending()) {
       console.log('isSignInPending')
       userSession.handlePendingSignIn().then((userData) => {
@@ -45,22 +51,44 @@ function MyApp({ Component, pageProps }: AppProps) {
         loadDIDSession(userData).then((session) => {
           if (session) {
             setUserData(userData)
+            // router.push('/dashboard', undefined, { shallow: true })
           }
         })
       }
     }
-  }, [userSession, setUserData])
+  }, [userSession])
 
   return (
     <ReactRelayContext.Provider value={{ environment }}>
       {/* <QueryClientProvider client={queryClient}> */}
-        <ChakraProvider theme={theme}>
-          <SideBarDrawerProvider>
-            <Component {...pageProps} />
-          </SideBarDrawerProvider>
-        </ChakraProvider>
+      <ChakraProvider theme={theme}>
+        {userData ? (
+          <>
+            <SideBarDrawerProvider>
+              <Flex direction="column" h="100vh">
+                <Header />
 
-        {/* <ReactQueryDevtools /> */}
+                <Flex w="100%" mt="6" maxWidth={1480} mx="auto" px="6">
+                  <Sidebar />
+                  <Component {...pageProps} />
+                </Flex>
+              </Flex>
+            </SideBarDrawerProvider>
+          </>
+        ) : (
+          <>
+            <Flex w="100vw" h="100vh" align="center" justify="center">
+              <Flex w="100%" maxWidth={360} bg="gray.800" p="8" borderRadius={8} flexDirection="column">
+                <Button type="submit" colorScheme="pink" size="lg" onClick={authenticate}>
+                  Enter
+                </Button>
+              </Flex>
+            </Flex>
+          </>
+        )}
+      </ChakraProvider>
+
+      {/* <ReactQueryDevtools /> */}
       {/* </QueryClientProvider> */}
     </ReactRelayContext.Provider>
   )

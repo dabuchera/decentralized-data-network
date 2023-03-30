@@ -1,5 +1,6 @@
 import { useQuery, UseQueryOptions, UseQueryResult } from 'react-query';
 import { graphql, useFragment, useLazyLoadQuery } from 'react-relay';
+
 import { api } from '../api';
 
 type User = {

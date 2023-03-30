@@ -106,34 +106,30 @@ const CreateUser = () => {
   return (
     <>
       <Head>
-        <title>Create user | Circ</title>
+        <title>Create Materialpassport | Circ</title>
       </Head>
-      <Box>
-        <Header />
 
-        <Flex w="100%" my="6" maxWidth={1480} mx="auto" px="6">
-          <Sidebar />
+      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+        <Box as="form" flex="1" borderRadius={8} bg="gray.800" p={['6', '8']} onSubmit={handleSubmit(handleCreateMaterialpassport)}>
+          <Heading size="lg" fontWeight="normal">
+            Create Materialpassport
+          </Heading>
 
-          <Box as="form" flex="1" borderRadius={8} bg="gray.800" p={['6', '8']} onSubmit={handleSubmit(handleCreateMaterialpassport)}>
-            <Heading size="lg" fontWeight="normal">
-              Create materialpassport
-            </Heading>
+          <Divider my="6" borderColor="gray.700" />
 
-            <Divider my="6" borderColor="gray.700" />
-
-            <VStack spacing={['6', '8']}>
-              <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-                <Input label="Name" error={errors.name} {...register('name')} />
-                {/* <Input
+          <VStack spacing={['6', '8']}>
+            <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
+              <Input label="Name" error={errors.name} {...register('name')} />
+              <Input
                   type="email"
                   label="E-mail"
                   error={errors.email}
                   {...register('email')}
-                /> */}
-              </SimpleGrid>
+                />
+            </SimpleGrid>
 
-              <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-                {/* <Input
+            <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
+              {/* <Input
                   type="password"
                   label="Senha"
                   error={errors.password}
@@ -145,24 +141,23 @@ const CreateUser = () => {
                   error={errors.password_confirmation}
                   {...register('password_confirmation')}
                 /> */}
-              </SimpleGrid>
-            </VStack>
+            </SimpleGrid>
+          </VStack>
 
-            <Flex mt={['6', '8']} justify="flex-end">
-              <HStack spacing="4">
-                <Link href="/materialpassports" passHref>
-                  <Button as="a" colorScheme="whiteAlpha">
-                    Cancel
-                  </Button>
-                </Link>
-                <Button type="submit" colorScheme="pink" isLoading={formState.isSubmitting}>
-                  Save
+          <Flex mt={['6', '8']} justify="flex-end">
+            <HStack spacing="4">
+              <Link href="/materialpassports" passHref>
+                <Button as="a" colorScheme="whiteAlpha">
+                  Cancel
                 </Button>
-              </HStack>
-            </Flex>
-          </Box>
-        </Flex>
-      </Box>
+              </Link>
+              <Button type="submit" colorScheme="pink" isLoading={formState.isSubmitting}>
+                Save
+              </Button>
+            </HStack>
+          </Flex>
+        </Box>
+      </SimpleGrid>
     </>
   )
 }

@@ -2,15 +2,7 @@ import { ApexOptions } from 'apexcharts';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
-import { Box, Flex, SimpleGrid, Text, theme } from '@chakra-ui/react';
-
-import { Header } from '../components/Header';
-import { Sidebar } from '../components/Sidebar';
-import { useHasMounted } from '../services/hook/useHasMounted';
-
-const Chart = dynamic(() => import('react-apexcharts'), {
-  ssr: false,
-});
+import { Box, SimpleGrid, Text, theme } from '@chakra-ui/react';
 
 const options: ApexOptions = {
   chart: {
@@ -58,50 +50,34 @@ const options: ApexOptions = {
       opacityTo: 0.3,
     },
   },
-};
+}
 
-const series = [{ name: 'series', data: [31, 120, 10, 28, 61, 18, 109] }];
+const series = [{ name: 'series', data: [31, 120, 10, 28, 61, 18, 109] }]
+
+const Chart = dynamic(() => import('react-apexcharts'), {
+  ssr: false,
+})
 
 export default function Dashboard() {
-  const hasMounted = useHasMounted();
-
   return (
     <>
       <Head>
         <title>Dashboard | Circ</title>
       </Head>
-      <Flex direction="column" h="100vh">
-        {hasMounted && <Header />}
-
-        <Flex w="100%" mt="6" maxWidth={1480} mx="auto" px="6">
-          {hasMounted && <Sidebar />}
-
-          <SimpleGrid flex="1" gap="4" minChildWidth="320px" align="flex-start">
-            <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">
-              <Text fontSize="lg" mb="4">
-                Inscritos da semana
-              </Text>
-              <Chart
-                options={options}
-                series={series}
-                type="area"
-                height={160}
-              />
-            </Box>
-            <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">
-              <Text fontSize="lg" mb="4">
-                Inscritos da semana
-              </Text>
-              <Chart
-                options={options}
-                series={series}
-                type="area"
-                height={160}
-              />
-            </Box>
-          </SimpleGrid>
-        </Flex>
-      </Flex>
+      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+        <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">
+          <Text fontSize="lg" mb="4">
+            Inscritos da semana
+          </Text>
+          <Chart options={options} series={series} type="area" height={160} />
+        </Box>
+        <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">
+          <Text fontSize="lg" mb="4">
+            Inscritos da semana
+          </Text>
+          <Chart options={options} series={series} type="area" height={160} />
+        </Box>
+      </SimpleGrid>
     </>
-  );
+  )
 }

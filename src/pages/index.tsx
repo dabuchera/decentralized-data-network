@@ -1,89 +1,32 @@
-import { DIDSession } from 'did-session';
 import Head from 'next/head';
-import Router from 'next/router';
-import { useEffect, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import * as yup from 'yup';
 
-import { composeClient, loadDIDSession } from '@/lib/composeDB';
-import { useAuth } from '@/services/hook/useAuth';
-import { Button, Container, Flex, Stack } from '@chakra-ui/react';
-import { getAccountIdByNetwork, StacksWebAuth } from '@didtools/pkh-stacks';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { AppConfig, authenticate, showConnect, UserData, UserSession } from '@stacks/connect';
-
-import { Input } from '../components/Form/Input';
+import { useHasMounted } from '@/services/hook/useHasMounted';
+import { Box, Flex, SimpleGrid, Text } from '@chakra-ui/react';
 
 import type { NextPage } from 'next'
-type SignInFormData = {
-  email?: string
-  password?: string
-}
 
-const signInFormSchema = yup.object().shape({
-  email: yup.string().required('E-mail obrigatório').email('E-mail inválido'),
-  password: yup.string().required('Senha obrigatória'),
-})
-
-const SignIn: NextPage = () => {
-  const [user, setUser] = useState<UserData>()
-
-  const { userSession, setUserData, authenticate, userData } = useAuth()
-
-
-  /**
-   * When app load check if user is already logged in
-   */
-  useEffect(() => {
-    console.log('useEffect')
-    if (userSession.isUserSignedIn()) {
-      const userData = userSession.loadUserData()
-      if (userData) {
-        loadDIDSession(userData).then((session) => {
-          if (session) {
-            setUserData(userData)
-            Router.push('/dashboard')
-          }
-        })
-      }
-    }
-  }, [userData])
-
-  const { register, handleSubmit, formState } = useForm({
-    resolver: yupResolver(signInFormSchema),
-  })
-
-  const { errors } = formState
-
-  const handleSignIn: SubmitHandler<SignInFormData> = async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-
-    Router.push('/dashboard')
-  }
+/* The useHasMounted function is typically used in Next.js applications to ensure that certain code,
+  such as analytics or other client-side libraries, only runs after the component has mounted on the client side.
+  This is because some code may not be compatible with server-side rendering,
+  or may not be necessary until the component has been fully mounted. */
+const Index: NextPage = () => {
+  // const hasMounted = useHasMounted()
 
   return (
     <>
       <Head>
-        <title>SignIn | Circ</title>
+        <title>Index | Circ</title>
       </Head>
-
-      {/* <Container mt={80} mb={80} size="xs">
-        {user ? userSession.loadUserData().profile.stxAddress.mainnet : <></>}
-        {!user ? <ConnectWallet onConnect={handleConnect} /> : <TodoList />}
-        <Button ml="20px" onClick={logout}>
-          Logout
-        </Button>
-      </Container> */}
-
-      <Flex w="100vw" h="100vh" align="center" justify="center">
-        <Flex w="100%" maxWidth={360} bg="gray.800" p="8" borderRadius={8} flexDirection="column">
-          <Button type="submit" colorScheme="pink" size="lg" onClick={authenticate}>
-            Enter
-          </Button>
-        </Flex>
-      </Flex>
+      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+        <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">
+        <Text align="center" colorScheme="pink" size="lg">
+          Do the Description here
+          </Text>
+          
+        </Box>
+      </SimpleGrid>
     </>
   )
 }
 
-export default SignIn
+export default Index

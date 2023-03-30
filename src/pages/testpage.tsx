@@ -1,57 +1,20 @@
-// import Test from '@/components/Composedb/Test'
-// import { graphql, usePreloadedQuery, PreloadedQuery } from 'react-relay'
-// import Materialpassports, { materialpassportIndexFragment } from '../components/Composedb/Materialpassports'
+import Head from 'next/head';
 
-import Materialpassports from '@/components/Composedb/Materialpassports paginator';
+import { Box, SimpleGrid, Text } from '@chakra-ui/react';
 
-// // const testpageQuery = graphql`
-// //   query TestpageQuery {
-// //     ...Materialpassports_materialpassportIndex
-// //   }
-// // `
-
-// const testpageQuery = graphql`
-//   query testpageQuery {
-//     materialpassportIndex(first: 10) @connection(key: "MPList_materialpassportIndex") {
-//       edges {
-//         node {
-//           id
-//           author {
-//             id
-//           }
-//           name
-//           completed
-//           version
-//           # ...MPItem_materialpassport
-//         }
-//       }
-//     }
-//   }
-// `
-
-export default function Testpage(props) {
-//   console.log('materialpassportsQuery ')
-//   console.log(testpageQuery)
-//   await preloadQuery(environment, materialpassportsQuery, {});
-
-//   const data = usePreloadedQuery(testpageQuery, props.relayData)
-
+export default function Testpage() {
   return (
     <>
-      <h1>Material Passports</h1>
-      {/* <Materialpassports/> */}
-      {/* <h1>Testpage</h1> */}
+      <Head>
+        <title>Testpage | Circ</title>
+      </Head>
+      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+        <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">
+          <Text align="center" colorScheme="pink" size="lg">
+            Testpage
+          </Text>
+        </Box>
+      </SimpleGrid>
     </>
   )
 }
-
-// export async function getServerSideProps() {
-//   const { environment, relayData } = initEnvironment();
-//   await preloadQuery(environment, materialpassportsQuery, {});
-
-//   return {
-//     props: {
-//       relayData,
-//     },
-//   };
-// }

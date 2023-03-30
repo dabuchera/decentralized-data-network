@@ -1,5 +1,5 @@
-import { RPCClient } from '@stacks/rpc-client'
-import { StacksMainnet, StacksTestnet } from '@stacks/network'
+import { StacksMainnet, StacksTestnet } from '@stacks/network';
+import { RPCClient } from '@stacks/rpc-client';
 
 const env = process.env.REACT_APP_NETWORK_ENV || 'testnet'
 
@@ -30,14 +30,16 @@ export const truncateMiddle = (fullString: string | undefined) => {
   if (fullString === undefined) {
     return 'undefined'
   } else {
-    const targetLength = 11
-    const separator = '...'
+    let prefix = ''
+    let suffix = ''
+    if (fullString.startsWith('did:')) {
+      prefix = fullString.slice(0, 21)
+      suffix = fullString.slice(-4)
+    } else {
+      prefix = fullString.slice(0, 4)
+      suffix = fullString.slice(-4)
+    }
 
-    const sepLen = separator.length
-    const charsToShow = targetLength - sepLen
-    const frontChars = Math.ceil(charsToShow / 2)
-    const backChars = Math.floor(charsToShow / 2)
-
-    return fullString.substring(0, frontChars) + separator + fullString.substring(fullString.length - backChars)
+    return `${prefix}....${suffix}`
   }
 }

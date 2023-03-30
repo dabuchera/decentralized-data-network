@@ -1,6 +1,8 @@
-import { StacksNetwork } from '@stacks/network'
-import { callReadOnlyFunction, cvToValue, standardPrincipalCV, bufferCVFromString } from '@stacks/transactions'
-import { microstacksPerSTX } from '@/lib/constants'
+import { microstacksPerSTX } from '@/lib/constants';
+import { StacksNetwork } from '@stacks/network';
+import {
+    bufferCVFromString, callReadOnlyFunction, cvToValue, standardPrincipalCV
+} from '@stacks/transactions';
 
 export interface IUserInfo {
   stxBalance: number

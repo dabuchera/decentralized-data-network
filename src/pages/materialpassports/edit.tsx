@@ -93,7 +93,7 @@ const Edit = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUse
     <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size={'xl'}>
       <ModalOverlay />
       <ModalContent borderRadius={8} bg="gray.800">
-        <ModalHeader fontWeight="normal">Edit materialpassport data</ModalHeader>
+        <ModalHeader fontWeight="normal">Edit Materialpassport Data</ModalHeader>
 
         <ModalCloseButton />
 
@@ -102,7 +102,7 @@ const Edit = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUse
             <Divider mb={6} borderColor="gray.700" />
 
             <VStack>
-              <Input label="Nome completo" mb={2} error={errors.name} {...register('name')} />
+              <Input label="Name" mb={2} error={errors.name} {...register('name')} />
               {/* <Input
                 type="email"
                 label="E-mail"

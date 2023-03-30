@@ -1,4 +1,4 @@
-import { AppConfig, AuthOptions } from '@stacks/connect'
+import { AppConfig, AuthOptions } from '@stacks/connect';
 
 export const appConfig = new AppConfig(['store_write', 'publish_data'])
 

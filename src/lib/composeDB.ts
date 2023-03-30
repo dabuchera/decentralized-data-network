@@ -1,16 +1,21 @@
-import { ComposeClient } from "@composedb/client";
-import { getAccountIdByNetwork, StacksWebAuth } from "@didtools/pkh-stacks";
-import { UserData } from "@stacks/connect";
-import { DIDSession } from "did-session";
-import runtimeComposite from "../../ceramic/definitions/runtime-merged-composite.json";
+import { DIDSession } from 'did-session';
+
+import { ComposeClient } from '@composedb/client';
+import { getAccountIdByNetwork, StacksWebAuth } from '@didtools/pkh-stacks';
+import { getStacksProvider, UserData } from '@stacks/connect';
+
+import runtimeComposite from '../../ceramic/definitions/runtime-merged-composite.json';
+import { appConfig } from './constants';
 
 export const composeClient = new ComposeClient({
-  ceramic: "http://localhost:7007",
+  ceramic: 'http://localhost:7007',
   definition: runtimeComposite as any,
-});
+})
 
 export const loadDIDSession = async (userData: UserData) => {
-  const stacksProvider = window.StacksProvider
+  // const stacksProvider = window.StacksProvider
+  const stacksProvider = getStacksProvider()
+
   const address = userData.profile.stxAddress.mainnet
   const accountId = getAccountIdByNetwork('mainnet', address)
   const authMethod = await StacksWebAuth.getAuthMethod(stacksProvider, accountId)

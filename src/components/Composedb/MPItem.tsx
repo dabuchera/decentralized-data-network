@@ -1,5 +1,8 @@
-import { Tr, Td, Box, Link, Button, Checkbox, Flex } from '@chakra-ui/react'
-import { graphql, useFragment, useLazyLoadQuery, useMutation, usePaginationFragment } from 'react-relay'
+import {
+    graphql, useFragment, useLazyLoadQuery, useMutation, usePaginationFragment
+} from 'react-relay';
+
+import { Box, Button, Checkbox, Flex, Link, Td, Tr } from '@chakra-ui/react';
 
 /* ## This is model ->  schema-materialpassport.graphql
 

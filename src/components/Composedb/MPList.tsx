@@ -1,9 +1,12 @@
-import { MPListQuery } from '@/__generated__/relay/MPListQuery.graphql'
-import { Button } from '@chakra-ui/react'
-import { MouseEventHandler } from 'react'
-import { graphql, useLazyLoadQuery, useMutation, usePaginationFragment } from 'react-relay'
+import { MouseEventHandler } from 'react';
+import { graphql, useLazyLoadQuery, useMutation, usePaginationFragment } from 'react-relay';
+
+import { MPListQuery } from '@/__generated__/relay/MPListQuery.graphql';
+import { Button } from '@chakra-ui/react';
+
 // import { AddListItem } from './AddListItem'
-import { MPItem } from './MPItem'
+import { MPItem } from './MPItem';
+
 // import { TodoItem } from './TodoItem'
 
 const mockMPData = [

@@ -1,10 +1,11 @@
-import { showConnect, UserData } from '@stacks/connect'
-import { useAtom, useAtomValue } from 'jotai'
-import { appDetails } from '@/lib/constants'
-import { userDataAtom, userSessionAtom } from '@/store/auth'
-import { getRPCClient } from '@/lib/utils'
-import { loadDIDSession } from '@/lib/composeDB'
-import Router from 'next/router'
+import { useAtom, useAtomValue } from 'jotai';
+import Router from 'next/router';
+
+import { loadDIDSession } from '@/lib/composeDB';
+import { appDetails } from '@/lib/constants';
+import { getRPCClient } from '@/lib/utils';
+import { userDataAtom, userSessionAtom } from '@/store/auth';
+import { showConnect, UserData } from '@stacks/connect';
 
 export const useAuth = () => {
   const userSession = useAtomValue(userSessionAtom)
@@ -26,7 +27,7 @@ export const useAuth = () => {
   const logout = () => {
     userSession.signUserOut()
     localStorage.removeItem('didsession')
-    Router.push('/')
+    window.location.reload()
   }
 
   const useSTXAddress = (): string | undefined => {

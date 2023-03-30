@@ -1,4 +1,4 @@
-import { graphql, useLazyLoadQuery, usePaginationFragment } from "react-relay"
+import { graphql, useLazyLoadQuery, usePaginationFragment } from 'react-relay';
 
 export default function Test() {
 

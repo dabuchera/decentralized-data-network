@@ -1,6 +1,6 @@
-import { useAuth } from '@/services/hook/useAuth'
-import { Avatar, Box, Button, Flex, Text } from '@chakra-ui/react'
-import { truncateMiddle } from '@/lib/utils'
+import { truncateMiddle } from '@/lib/utils';
+import { useAuth } from '@/services/hook/useAuth';
+import { Avatar, Box, Button, Flex, Text } from '@chakra-ui/react';
 
 interface ProfileProps {
   isWideVersion?: boolean
