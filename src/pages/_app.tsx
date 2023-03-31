@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { ReactRelayContext } from 'react-relay';
 
 import { Header } from '@/components/Header';
-import Layout from '@/components/Layout';
 import { Sidebar } from '@/components/Sidebar';
 import { loadDIDSession } from '@/lib/composeDB';
 import { environment } from '@/lib/relay';
@@ -26,16 +25,16 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     console.log('_app.tsx -> useEffect')
-    console.log('userSession')
-    console.log(userSession)
+    // console.log('userSession')
+    // console.log(userSession)
 
-    console.log('userData')
-    console.log(userData)
-
+    // console.log('userData')
+    // console.log(userData)
     if (userSession.isSignInPending()) {
       console.log('isSignInPending')
       userSession.handlePendingSignIn().then((userData) => {
-        console.log('session')
+        // console.log('session')
+        // console.log(userData)
         if (userData) {
           loadDIDSession(userData).then((session) => {
             if (session) {

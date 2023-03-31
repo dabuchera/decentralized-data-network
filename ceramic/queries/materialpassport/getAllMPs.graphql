@@ -1,0 +1,20 @@
+query getAllMPs{
+  materialpassportIndex(first: 100, after: null){
+    edges {
+      node {
+        id
+        author {
+          id
+        }
+        name
+        created
+        completed
+        version
+      }
+    }
+    pageInfo {
+        endCursor
+        hasNextPage
+      }
+  }
+}

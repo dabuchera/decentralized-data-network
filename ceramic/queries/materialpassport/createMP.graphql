@@ -1,0 +1,17 @@
+mutation createMP($input: CreateMaterialpassportInput!) {
+    createMaterialpassport(input: $input) {
+      document {
+        id
+      }
+    }
+  }
+
+{
+  "input": {
+    "content": {
+      "name": "MYNAME",
+      "created": "created"
+      "completed": "completed"
+    }
+  }
+}

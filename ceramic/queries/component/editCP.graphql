@@ -1,0 +1,19 @@
+mutation editCP($id: ID!, $mpID:StreamID!, $name:String!, $functionalLayer:FunctionalLayer!, $actor:Actor!, $lifecyclephase:LCP!, $attributes:String ) {
+    updateComponent(input: { id: $id, content: { mpID: $mpID, name: $name, functionalLayer: $functionalLayer,
+                            actor: $actor, lifecyclephase: $lifecyclephase ,attributes: $attributes} }) {
+      # Return Value                        
+      document {
+        id
+    }
+    }
+  }
+
+{
+  "id":"The Id of the component to be edited",
+  "mpID": "kjzl6kcym7w8y6bj5c4qvrp9keedv71lyihzzoxe5wmo818zhztzuzrca319piu",
+  "name": "MYNAME",
+  "functionalLayer": "functionalLayer",
+  "actor": "actor",
+  "lifecyclephase": "lifecyclephase",
+  "attributes":"[{\"key\":\"key1\",\"value\":\"value1\"},{\"key\":\"key2\",\"value\":\"value2\"}]",
+}

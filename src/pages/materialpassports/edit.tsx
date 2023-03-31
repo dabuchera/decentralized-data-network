@@ -5,33 +5,28 @@ import { graphql, useMutation } from 'react-relay';
 import * as yup from 'yup';
 
 import {
-    Box, Button, Divider, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter,
-    ModalHeader, ModalOverlay, VStack
+    Box, Button, Checkbox, Divider, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter,
+    ModalHeader, ModalOverlay, Stack, VStack
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Input } from '../../components/Form/Input';
-import { api } from '../../services/api';
-import { queryClient } from '../../services/queryClient';
 import { MaterialpassportFormData } from '../../types';
 
-const editUpdateMaterialpassportMutation = graphql`
-  mutation editUpdateMaterialpassportMutation($id: ID!, $name: String!) {
-    updateMaterialpassport(input: { id: $id, content: { name: $name } }) {
+const editMaterialpassportMutation = graphql`
+  mutation editMaterialpassportMutation($id: ID!, $name: String!, $completed: Boolean!) {
+    updateMaterialpassport(input: { id: $id, content: { name: $name, completed: $completed } }) {
       document {
         id
-        author {
-          id
-        }
         name
         completed
-        version
       }
     }
   }
 `
 
 type EditUserProps = {
+  // materialpassport is loaded only after hover over Edit button
   materialpassport?: Pick<MaterialpassportFormData, 'name' | 'completed'>
   materialpassportId: string
   isOpen: boolean
@@ -43,7 +38,7 @@ const editUserFormSchema = yup.object().shape({
   completed: yup.boolean().required('Completed required'),
 })
 
-const Edit = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUserProps) => {
+const EditMaterialpassport = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUserProps) => {
   const initialRef = useRef(null)
 
   const { register, handleSubmit, formState, reset, setValue } = useForm<MaterialpassportFormData>({
@@ -51,40 +46,44 @@ const Edit = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUse
   })
 
   useEffect(() => {
-    setValue('name', materialpassport?.name)
-    setValue('completed', materialpassport?.completed)
+    if (materialpassport) {
+      setValue('name', materialpassport.name)
+      setValue('completed', materialpassport.completed)
+    }
   }, [materialpassport, setValue])
 
   const { errors } = formState
 
-  const [commit, isInFlight] = useMutation(editUpdateMaterialpassportMutation)
+  const [commit, isInFlight] = useMutation(editMaterialpassportMutation)
 
-  async function updateMaterialpassportName(existingId: string, newName: string | undefined) {
+  async function updateMaterialpassport(existingId: string, newName: string, newCompleted: boolean) {
     console.log(existingId, newName)
     commit({
       variables: {
         id: existingId,
         name: newName,
+        completed: newCompleted,
       },
       optimisticResponse: {
         updateMaterialpassport: {
           document: {
             id: existingId,
             name: newName,
-            completed: 'temp-completed',
-            author: {
-              id: 'temp-author-id', // Temporary author ID, replace it with an actual value if available
-            },
-            version: 'temp-version', // Temporary version, replace it with an actual value if available
+            completed: newCompleted,
           },
         },
+      },
+      onCompleted: (data, errors) => {
+        console.log('*********************** updateMaterialpassportName ***********************')
+        console.log(data)
+        console.log(errors)
       },
     })
   }
 
   const handleCreateUser: SubmitHandler<MaterialpassportFormData> = async (data) => {
-    console.log(data)
-    updateMaterialpassportName(materialpassportId, data.name)
+    // console.log(data)
+    updateMaterialpassport(materialpassportId, data.name, data.completed)
     onClose()
     reset()
   }
@@ -103,14 +102,12 @@ const Edit = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUse
 
             <VStack>
               <Input label="Name" mb={2} error={errors.name} {...register('name')} />
+              <Stack spacing={5} direction="row" alignItems="">
+                <Checkbox colorScheme="green" {...register('completed')}>
+                  Completed
+                </Checkbox>
+              </Stack>
               {/* <Input
-                type="email"
-                label="E-mail"
-                mb={2}
-                error={errors.email}
-                {...register('email')}
-              />
-              <Input
                 type="password"
                 label="Senha"
                 mb={2}
@@ -132,7 +129,7 @@ const Edit = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUse
             </Button>
 
             <Link href="/materialpassports" passHref>
-              <Button as="a" size="sm" fontSize="sm" ml="4" colorScheme="purple" _hover={{ cursor: 'pointer' }} onClick={onClose}>
+              <Button as="div" size="sm" fontSize="sm" ml="4" colorScheme="purple" _hover={{ cursor: 'pointer' }} onClick={onClose}>
                 Cancel
               </Button>
             </Link>
@@ -143,4 +140,4 @@ const Edit = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUse
   )
 }
 
-export default Edit
+export default EditMaterialpassport

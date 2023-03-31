@@ -1,4 +1,4 @@
-type Materialpassport @loadModel(id: "kjzl6hvfrbw6c95mqxz3bhnv35rhtb9senbr5jyb3s87vei7dvu38hkzhehqzhw") {
+type Materialpassport @loadModel(id: "kjzl6hvfrbw6c5cvth7x78s20oe70dmee5p547pdd6nxj1nybuinc3z4whsucan") {
   id: ID!
 }
 
@@ -6,11 +6,12 @@ type Component @createModel(accountRelation: LIST, description: "Component") {
   author: DID! @documentAccount
   mpID: StreamID! @documentReference(model: "Materialpassport")
   mp: Materialpassport! @relationDocument(property: "mpID")
-  title: String! @string(minLength: 0, maxLength: 100)
+  name: String! @string(minLength: 0, maxLength: 100)
   functionalLayer: FunctionalLayer!
   actor: Actor!
   lifecyclephase: LCP!
-  property: String @string(minLength: 0, maxLength: 100)
+  attributes: String! @string(minLength: 0, maxLength: 1000000)
+  created: String! @string(minLength: 10, maxLength: 10)
   version: CommitID! @documentVersion
 }
 

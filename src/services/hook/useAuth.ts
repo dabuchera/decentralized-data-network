@@ -1,5 +1,5 @@
 import { useAtom, useAtomValue } from 'jotai';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 
 import { loadDIDSession } from '@/lib/composeDB';
 import { appDetails } from '@/lib/constants';
@@ -8,6 +8,8 @@ import { userDataAtom, userSessionAtom } from '@/store/auth';
 import { showConnect, UserData } from '@stacks/connect';
 
 export const useAuth = () => {
+  const router = useRouter()
+
   const userSession = useAtomValue(userSessionAtom)
   const [userData, setUserData] = useAtom(userDataAtom)
 
@@ -16,8 +18,9 @@ export const useAuth = () => {
       appDetails,
       onFinish: async () => {
         const userData = userSession.loadUserData()
-        await loadDIDSession(userData).then(() => {
+        await loadDIDSession(userData).then((didsession) => {
           setUserData(userData)
+          // window.location.reload()
         })
       },
       userSession,
@@ -25,9 +28,12 @@ export const useAuth = () => {
   }
 
   const logout = () => {
-    userSession.signUserOut()
+    router.push('/')
+    setTimeout(() => {
+      userSession.signUserOut()
     localStorage.removeItem('didsession')
     window.location.reload()
+    }, 500);
   }
 
   const useSTXAddress = (): string | undefined => {
@@ -82,8 +88,8 @@ export const useAuth = () => {
 
     const returnArr: string[] = []
     data.results.forEach((element: { value: { repr: string } }) => {
-      returnArr.push(element.value.repr.replace("u",""))
-    });
+      returnArr.push(element.value.repr.replace('u', ''))
+    })
 
     return returnArr
     // const contractAddress = process.env.REACT_APP_CONTRACT_ADDRESS

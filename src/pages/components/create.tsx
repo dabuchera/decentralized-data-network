@@ -5,23 +5,23 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { graphql, useMutation } from 'react-relay';
 import * as yup from 'yup';
 
+import {
+    Actor, ComponentFormData, FunctionalLayer, KeyValue, LCP, MaterialpassportFormData
+} from '@/types';
 import { Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, VStack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-import {
-    CreateMaterialpassportInput
-} from '../../__generated__/relay/createMaterialpassportMutation.graphql';
 import { Input } from '../../components/Form/Input';
-import { MaterialpassportFormData } from '../../types';
+import { Header } from '../../components/Header';
+import { Sidebar } from '../../components/Sidebar';
+import { api } from '../../services/api';
+import { queryClient } from '../../services/queryClient';
 
-const createMaterialpassportMutation = graphql`
-  mutation createMaterialpassportMutation($input: CreateMaterialpassportInput!) {
-    createMaterialpassport(input: $input) {
+const createComponentMutation = graphql`
+  mutation createComponentMutation($input: CreateComponentInput!) {
+    createComponent(input: $input) {
       document {
         id
-        name
-        completed
-        created
       }
     }
   }
@@ -39,7 +39,7 @@ const createMaterialpassportFormSchema = yup.object().shape({
   //   .oneOf([null, yup.ref('password')], 'As senhas devem ser iguais'),
 })
 
-const CreateMaterialpassport = () => {
+const CreateComponent = () => {
   const router = useRouter()
 
   const { register, handleSubmit, formState } = useForm<MaterialpassportFormData>({
@@ -48,46 +48,41 @@ const CreateMaterialpassport = () => {
 
   const { errors } = formState
 
-  const [commit, isInFlight] = useMutation(createMaterialpassportMutation)
+  const [commit, isInFlight] = useMutation(createComponentMutation)
 
-  function createMaterialpassportCeramic(newName: string) {
-    const date = new Date()
-    const formattedDate = date.toISOString().slice(0, 10)
-    // console.log('*********************** formattedDate ***********************')
-    // console.log(typeof formattedDate)
-    // console.log(newName)
-
+  function createComponentCeramic(
+    newName: string,
+    mpID: string,
+    functionalLayer: FunctionalLayer,
+    actor: Actor,
+    lifecyclephase: LCP,
+    attributes: KeyValue[]
+  ) {
     commit({
       variables: {
         input: {
-          content: {
-            name: newName,
-            completed: false,
-            created: formattedDate,
-          },
+          mpID: mpID,
+          name: newName,
+          functionalLayer: functionalLayer,
+          actor: actor,
+          lifecyclephase: lifecyclephase,
+          // "[{\"key\":\"key1\",\"value\":\"value1\"},{\"key\":\"key2\",\"value\":\"value2\"}]",
+          attributes: JSON.stringify(attributes),
         },
       },
       optimisticResponse: {
         createMaterialpassport: {
           document: {
             id: 'temp-id', // Temporary ID, it will be replaced with the actual ID from the server response
-            name: newName,
-            completed: false,
-            created: formattedDate,
           },
         },
       },
-      onCompleted: (data, errors) => {
-        console.log("*********************** createMaterialpassportCeramic ***********************")
-        console.log(data)
-        console.log(errors)
-      }
     })
   }
 
-  const handleCreateMaterialpassport: SubmitHandler<MaterialpassportFormData> = async (data) => {
+  const handleCreateMaterialpassport: SubmitHandler<ComponentFormData> = async (data) => {
     console.log(data)
-    createMaterialpassportCeramic(data.name)
+    createComponentCeramic(data.name)
     // await createUser.mutateAsync(data);
     router.push('/materialpassports')
   }
@@ -109,12 +104,7 @@ const CreateMaterialpassport = () => {
           <VStack spacing={['6', '8']}>
             <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
               <Input label="Name" error={errors.name} {...register('name')} />
-              {/* <Input
-                  type="email"
-                  label="E-mail"
-                  error={errors.email}
-                  {...register('email')}
-                /> */}
+              <Input type="email" label="E-mail" error={errors.email} {...register('email')} />
             </SimpleGrid>
 
             <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
@@ -151,4 +141,4 @@ const CreateMaterialpassport = () => {
   )
 }
 
-export default CreateMaterialpassport
+export default CreateComponent

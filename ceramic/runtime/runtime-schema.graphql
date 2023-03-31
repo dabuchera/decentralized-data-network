@@ -49,9 +49,10 @@ scalar CeramicStreamID
 type Component implements Node {
   id: ID!
   mpID: CeramicStreamID!
+  name: String!
   actor: ComponentActor
-  title: String!
-  property: String
+  created: String!
+  attributes: String!
   lifecyclephase: ComponentLcp
   functionalLayer: ComponentFunctionalLayer
   mp: Materialpassport
@@ -104,9 +105,10 @@ enum ComponentFunctionalLayer {
 
 input ComponentInput {
   mpID: CeramicStreamID!
+  name: String!
   actor: ComponentActor
-  title: String!
-  property: String
+  created: String!
+  attributes: String!
   lifecyclephase: ComponentLcp
   functionalLayer: ComponentFunctionalLayer
 }
@@ -163,6 +165,7 @@ type CreateMaterialpassportPayload {
 type Materialpassport implements Node {
   id: ID!
   name: String!
+  created: String!
   completed: Boolean!
 
   """Account controlling the document"""
@@ -192,6 +195,7 @@ type MaterialpassportEdge {
 
 input MaterialpassportInput {
   name: String!
+  created: String!
   completed: Boolean!
 }
 
@@ -225,15 +229,17 @@ type PageInfo {
 
 input PartialComponentInput {
   mpID: CeramicStreamID
+  name: String
   actor: ComponentActor
-  title: String
-  property: String
+  created: String
+  attributes: String
   lifecyclephase: ComponentLcp
   functionalLayer: ComponentFunctionalLayer
 }
 
 input PartialMaterialpassportInput {
   name: String
+  created: String
   completed: Boolean
 }
 

@@ -41,8 +41,5 @@ export const loadDIDSession = async (userData: UserData) => {
     composeClient.setDID(session.did)
   }
 
-  console.log('session')
-  console.log(session)
-
   return session
 }

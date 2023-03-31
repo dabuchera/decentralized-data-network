@@ -1,0 +1,6 @@
+query GetSpecificNode{
+  node(id: "kjzl6kcym7w8y8cbt3woha36wi1gvbtsasakyknvsai5drgg3fvrtv16e3z6t3b")
+  {
+    id
+  }
+}

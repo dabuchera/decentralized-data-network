@@ -1,0 +1,28 @@
+query getAllCPs {
+  componentIndex(first: 100, after: null) {
+    edges {
+      node {
+        id
+        author {
+          id
+        }
+        mpID
+        mp {
+          id
+          name
+        }
+        name
+        functionalLayer
+        actor
+        lifecyclephase
+        attributes
+        created
+        version
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+  }
+}

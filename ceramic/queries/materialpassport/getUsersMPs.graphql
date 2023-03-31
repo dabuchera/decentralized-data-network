@@ -1,0 +1,12 @@
+query getUsersMPs {
+  viewer {
+    id
+    materialpassportList(first: 10) {
+      edges {
+        node {
+          id
+        }
+      }
+    }
+  }
+}

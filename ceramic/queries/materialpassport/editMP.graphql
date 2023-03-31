@@ -1,0 +1,13 @@
+mutation editMP($id: ID!, $name: String!) {
+    updateMaterialpassport(input: { id: $id, content: { name: $name, completed: $completed } }) {
+      document {
+        id
+      }
+    }
+  }
+
+{
+  "id":"The Id of the materialpassport to be edited",
+  "name":"Testing 10000"
+  "completed":"completed"
+}
