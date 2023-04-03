@@ -1,5 +1,7 @@
-import { truncateMiddle } from '@/lib/utils';
-import { useAuth } from '@/services/hook/useAuth';
+import { useRouter } from 'next/router';
+
+import { truncateMiddle, useSTXAddress } from '@/lib/utils';
+import { useAuthContext } from '@/services/providers/StacksAuthProvider';
 import { Avatar, Box, Button, Flex, Text } from '@chakra-ui/react';
 
 interface ProfileProps {
@@ -7,7 +9,17 @@ interface ProfileProps {
 }
 
 export function Profile({ isWideVersion = true }: ProfileProps) {
-  const { authenticate, logout, userData, useSTXAddress } = useAuth()
+  const { authenticate, logout, userData } = useAuthContext('Profile')
+
+  const router = useRouter()
+
+  const logoutLocal = () => {
+    router.push('/')
+    setTimeout(() => {
+      logout()
+    }, 250);
+  }
+
   return (
     // <Flex align="center">
     //   {showProfileData && (
@@ -34,7 +46,7 @@ export function Profile({ isWideVersion = true }: ProfileProps) {
               {truncateMiddle(useSTXAddress())}
             </Button>
           )}
-          <Button onClick={logout} colorScheme="pink" size="md">
+          <Button onClick={logoutLocal} colorScheme="pink" size="md">
             Disconnect Wallet
           </Button>
         </>

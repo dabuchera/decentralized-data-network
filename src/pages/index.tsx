@@ -10,25 +10,25 @@ import type { NextPage } from 'next'
   such as analytics or other client-side libraries, only runs after the component has mounted on the client side.
   This is because some code may not be compatible with server-side rendering,
   or may not be necessary until the component has been fully mounted. */
-const Index: NextPage = () => {
+const Home: NextPage = () => {
   // const hasMounted = useHasMounted()
-  const { userSession, setUserData } = useAuth()
+  // const { userSession, setUserData } = useAuth()
 
-  useEffect(() => {
-    // We had an error where when not reloading the app it was not working at the beginning
-    const userData = userSession.loadUserData();
-    (async () => {
-      await loadDIDSession(userData)
-      setUserData(userData)
-    })()
-  }, [])
+  // useEffect(() => {
+  //   // We had an error where when not reloading the app it was not working at the beginning
+  //   const userData = userSession.loadUserData();
+  //   (async () => {
+  //     await loadDIDSession(userData)
+  //     setUserData(userData)
+  //   })()
+  // }, [])
 
   return (
     <>
       <Head>
         <title>Index | Circ</title>
       </Head>
-      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+      <SimpleGrid flex="1" gap="4" w="75vw" minChildWidth="320px" alignItems="flex-start">
         <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">
           <Text align="center" colorScheme="pink" size="lg">
             Do the Description here
@@ -39,4 +39,4 @@ const Index: NextPage = () => {
   )
 }
 
-export default Index
+export default Home

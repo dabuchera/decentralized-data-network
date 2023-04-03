@@ -33,8 +33,6 @@ const Materialpassports: NextPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isOpenComponents, onOpen: onOpenComponents, onClose: onCloseComponents } = useDisclosure()
 
-  const { userSession, setUserData, authenticate, userData } = useAuth()
-
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
@@ -72,7 +70,7 @@ const Materialpassports: NextPage = () => {
         <title>Materialpassports | Circ</title>
       </Head>
 
-      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+      <SimpleGrid flex="1" gap="4" w="75vw" minChildWidth="320px" alignItems="flex-start">
         <Box flex="1" borderRadius={8} bg="gray.800" p={['4', '4', '8']}>
           <Flex mb="8" justify="space-between" align="center">
             <Heading size="lg" fontWeight="normal">

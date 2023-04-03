@@ -7,6 +7,7 @@ specifiers:
   '@emotion/react': ^11.10.6
   '@emotion/styled': ^11.10.6
   '@hookform/resolvers': ^2.9.11
+  '@stacks/auth': ^6.3.0
   '@stacks/connect': ^7.2.1
   '@stacks/network': ^6.3.0
   '@stacks/rpc-client': ^0.8.18
@@ -46,6 +47,7 @@ dependencies:
   '@emotion/react': 11.10.6_pmekkgnqduwlme35zpnqhenc34
   '@emotion/styled': 11.10.6_oouaibmszuch5k64ms7uxp2aia
   '@hookform/resolvers': 2.9.11_react-hook-form@7.43.5
+  '@stacks/auth': 6.3.0
   '@stacks/connect': 7.2.1
   '@stacks/network': 6.3.0
   '@stacks/rpc-client': 0.8.18

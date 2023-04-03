@@ -122,7 +122,7 @@ export const useStorage = (page: number, reloadCount: number) => {
   useEffect(() => {
     // Execute this function when the component is mounted or when `dataCP` changes
     // console.log('Data loaded:', dataCP);
-    console.log(isFetching);
+    // console.log('Data loaded:', dataCP);
     if (dataMP && dataCP) {
       setTimeout(() => {
         setIsFetching(false)

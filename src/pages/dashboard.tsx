@@ -1,4 +1,5 @@
 import { ApexOptions } from 'apexcharts';
+import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 
@@ -58,22 +59,22 @@ const Chart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
 })
 
-export default function Dashboard() {
+const Dashboard: NextPage = () => {
   return (
     <>
       <Head>
         <title>Dashboard | Circ</title>
       </Head>
-      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+      <SimpleGrid flex="1" gap="4" w="75vw" minChildWidth="320px" alignItems="flex-start">
         <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">
           <Text fontSize="lg" mb="4">
-            Inscritos da semana
+            Numbers of the week{' '}
           </Text>
           <Chart options={options} series={series} type="area" height={160} />
         </Box>
         <Box p={['6', '8']} bg="gray.800" borderRadius={8} pb="4">
           <Text fontSize="lg" mb="4">
-            Inscritos da semana
+            Numbers of the week{' '}
           </Text>
           <Chart options={options} series={series} type="area" height={160} />
         </Box>
@@ -81,3 +82,5 @@ export default function Dashboard() {
     </>
   )
 }
+
+export default Dashboard
