@@ -43,7 +43,7 @@ export function Profile({ isWideVersion = true }: ProfileProps) {
         <>
           {isWideVersion && (
             <Button colorScheme="pink" size="md">
-              {truncateMiddle(useSTXAddress())}
+              {/* {truncateMiddle(useSTXAddress())} */}
             </Button>
           )}
           <Button onClick={logoutLocal} colorScheme="pink" size="md">

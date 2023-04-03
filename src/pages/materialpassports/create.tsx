@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { graphql, useMutation } from 'react-relay';
+import { graphql, useMutation, useRelayEnvironment } from 'react-relay';
 import * as yup from 'yup';
 
 import { Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, VStack } from '@chakra-ui/react';
@@ -56,6 +56,8 @@ const CreateMaterialpassport = () => {
     // console.log('*********************** formattedDate ***********************')
     // console.log(typeof formattedDate)
     // console.log(newName)
+    const environment = useRelayEnvironment()
+    console.log(environment)
 
     commit({
       variables: {
@@ -78,10 +80,10 @@ const CreateMaterialpassport = () => {
         },
       },
       onCompleted: (data, errors) => {
-        console.log("*********************** createMaterialpassportCeramic ***********************")
+        console.log('*********************** createMaterialpassportCeramic ***********************')
         console.log(data)
         console.log(errors)
-      }
+      },
     })
   }
 

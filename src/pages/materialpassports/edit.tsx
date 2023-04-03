@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { graphql, useMutation } from 'react-relay';
+import { graphql, useMutation, useRelayEnvironment } from 'react-relay';
 import * as yup from 'yup';
 
 import {
@@ -54,10 +54,16 @@ const EditMaterialpassport = ({ materialpassport, materialpassportId, isOpen, on
 
   const { errors } = formState
 
+  const environment = useRelayEnvironment()
+  console.log(environment)
   const [commit, isInFlight] = useMutation(editMaterialpassportMutation)
 
   async function updateMaterialpassport(existingId: string, newName: string, newCompleted: boolean) {
-    console.log(existingId, newName)
+    console.log('existingId')
+    console.log(existingId)
+    console.log('newName')
+    console.log(newName)
+
     commit({
       variables: {
         id: existingId,

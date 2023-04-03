@@ -1,63 +1,99 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { AiOutlineReload } from 'react-icons/ai';
-import { RiAddLine } from 'react-icons/ri';
+import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 import { RxComponent1 } from 'react-icons/rx';
+import { PreloadedQuery, usePreloadedQuery, useRelayEnvironment } from 'react-relay';
 
+import { processMaterialpassports } from '@/lib/dataHandling';
 import { truncateMiddle } from '@/lib/utils';
+import { getAllMaterialpassports } from '@/relay/queries/getAllMaterialpassports';
 import { useAuth } from '@/services/hook/useAuth';
 import { useStorage } from '@/services/hook/useStorage';
-import { ComponentFormData } from '@/types';
+import { Materialpassport, MaterialpassportFormData } from '@/types';
 import {
     Box, Button, Checkbox, Flex, Heading, Icon, Link, SimpleGrid, Spinner, Table, Tbody, Td, Text,
     Th, Thead, Tr, useBreakpointValue, useDisclosure
 } from '@chakra-ui/react';
 
-import Attributes from './attributes';
+import getAllMaterialpassportsQueryNode, {
+    getAllMaterialpassportsQuery
+} from '../../__generated__/relay/getAllMaterialpassportsQuery.graphql';
+import { Pagination } from '../../components/Pagination';
+import Components from './components';
+import EditMaterialpassport from './edit';
 
-// When usePaginationFragment the structure could be done better
-const Components: NextPage = () => {
-  // (/*{ users, totalCount }*/) => {
-  console.log('Component Components')
-
+export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpassportsQuery> }) {
   const [page, setPage] = useState(1)
   const [reloadCount, setReloadCount] = useState(0)
 
-  const { components, isFetching, error } = useStorage(page, reloadCount)
-  console.log(components)
-
-  const [componentEdit, setComponentEdit] = useState<ComponentFormData>()
-  const [componentId, setComponentId] = useState('')
+  const [isFetching, setIsFetching] = useState(true)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isOpenComponents, onOpen: onOpenComponents, onClose: onCloseComponents } = useDisclosure()
 
-  // const { userSession, setUserData, authenticate, userData } = useAuth()
+  const [materialpassportEdit, setMaterialpassportEdit] = useState<MaterialpassportFormData>()
+  const [materialpassportId, setMaterialpassportId] = useState('')
+
+  const data = usePreloadedQuery(getAllMaterialpassportsQueryNode, props.queryRef)
+  const {materialpassports} = processMaterialpassports(data, page)
+
+  console.log('materialpassports')
+  console.log(materialpassports)
+
+  const environment = useRelayEnvironment()
+  console.log('environment')
+  console.log(environment)
+
+  // https://github.com/relayjs/relay-examples/tree/main/issue-tracker-next-v13
+
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsFetching(false)
+    }, 2000)
+  }, [])
+
+  // if (isFetching) {
+  //   return <Spinner size="lg" color="gray.500" />
+  // }
+
+  // const { materialpassports, isFetching, error } = useStorage(page, reloadCount)
+
+  // return (
+  //       <Suspense fallback={<Spinner size="sm" color="gray.500" ml="4" />}>
+  //         {isFetching ? <Spinner size="sm" color="gray.500" ml="4" /> : <h1>{data?.materialpassportIndex?.edges[0]?.node?.author.id}</h1>}
+  //       </Suspense>
+  //     )
+  //   }
 
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
   })
 
-  const handlePrefetch = (componentId: string) => {
-    console.log('handlePrefetch')
-    setComponentEdit(components.find((item) => item.id === componentId))
-    setComponentId(componentId)
+  const handlePrefetch = (materialpassportId: string) => {
+    setMaterialpassportEdit(materialpassports.find((item) => item.id === materialpassportId))
+    setMaterialpassportId(materialpassportId)
+  }
+
+  const handlePrefetchComponents = (materialpassportId: string) => {
+    console.log('handlePrefetchComponents')
   }
 
   return (
     <>
       <Head>
-        <title>Components | Circ</title>
+        <title>Materialpassports | Circ</title>
       </Head>
 
-      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+      <SimpleGrid flex="1" gap="4" w="75vw" minChildWidth="320px" alignItems="flex-start">
         <Box flex="1" borderRadius={8} bg="gray.800" p={['4', '4', '8']}>
           <Flex mb="8" justify="space-between" align="center">
             <Heading size="lg" fontWeight="normal">
-              Components
+              Materialpassports
               {isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
             </Heading>
 
@@ -77,7 +113,7 @@ const Components: NextPage = () => {
                 Update
               </Button>
 
-              <NextLink href="/components/create" passHref>
+              <NextLink href="/materialpassports/create" passHref>
                 <Button
                   as="div"
                   size="sm"
@@ -96,43 +132,50 @@ const Components: NextPage = () => {
             <Flex justify="center">
               <Spinner />
             </Flex>
-          ) : error ? (
+          ) : (
+            /* error ? (
             <Flex justify="center">
               <Text>Failure to obtain user data.</Text>
             </Flex>
-          ) : (
-            <>
+          ) : */ <>
               <Table colorScheme="whiteAlpha">
                 <Thead>
                   <Tr>
                     <Th>Name</Th>
+                    <Th>Created</Th>
                     <Th>Completed</Th>
-                    {isWideVersion && <Th>Attributes</Th>}
+                    {isWideVersion && <Th>Components</Th>}
                     <Th w="8"></Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {components?.map((component) => (
-                    <Tr key={component.id}>
+                  {materialpassports?.map((materialpassport: Materialpassport) => (
+                    <Tr key={materialpassport.id}>
                       <Td>
                         <Box>
                           <Link color="purple.400">
-                            <Text fontWeight="bold">{component.name}</Text>
+                            <Text fontWeight="bold">{materialpassport.name}</Text>
                           </Link>
                           <Text fontSize="sm" color="gray.300">
-                            {truncateMiddle(component.author_id)}
+                            {truncateMiddle(materialpassport.author_id)}
                           </Text>
                         </Box>
                       </Td>
                       <Td>
-                        {/* <Checkbox
+                        <Box>
+                          <Text fontSize="sm" color="gray.300">
+                            {materialpassport.created}
+                          </Text>
+                        </Box>
+                      </Td>
+                      <Td>
+                        <Checkbox
                           size="lg"
-                          colorScheme="purple"
                           iconColor="#D6BCFA"
-                          isChecked={component.completed}
+                          isChecked={materialpassport.completed}
                           isDisabled={true}
                           isFocusable={false}
-                        ></Checkbox> */}
+                        ></Checkbox>
                       </Td>
                       {isWideVersion && (
                         <Td>
@@ -143,34 +186,44 @@ const Components: NextPage = () => {
                             _hover={{ cursor: 'pointer' }}
                             leftIcon={<Icon as={RxComponent1} fontSize="16" />}
                             onClick={onOpenComponents}
-                            onMouseEnter={() => handlePrefetch(component.id)}
+                            onMouseEnter={() => handlePrefetchComponents(materialpassport.id)}
                           >
-                            {isWideVersion && `Attributes (${component?.properties?.length})`}
+                            {isWideVersion && 'Components'}
                           </Button>
                         </Td>
                       )}
                       <Td>
-                        {/* <Button
+                        <Button
                           size="sm"
                           fontSize="sm"
                           colorScheme="purple"
                           _hover={{ cursor: 'pointer' }}
                           leftIcon={<Icon as={RiPencilLine} fontSize="16" />}
                           onClick={onOpen}
-                          onMouseEnter={() => handlePrefetch(component.id)}
+                          onMouseEnter={() => handlePrefetch(materialpassport.id)}
                         >
                           {isWideVersion && 'Edit'}
-                        </Button> */}
+                        </Button>
                       </Td>
                     </Tr>
                   ))}
                 </Tbody>
               </Table>
 
-              {/* <EditUser component={componentEdit} componentId={componentId} isOpen={isOpen} onClose={onClose} /> */}
-              <Attributes attributes={componentEdit?.properties} isOpen={isOpenComponents} onClose={onCloseComponents} />
+              <EditMaterialpassport
+                materialpassport={materialpassportEdit}
+                materialpassportId={materialpassportId}
+                isOpen={isOpen}
+                onClose={onClose}
+              />
+              {/* <Components
+                materialpassport={materialpassportEdit}
+                materialpassportId={materialpassportId}
+                isOpen={isOpenComponents}
+                onClose={onCloseComponents}
+              /> */}
 
-              {/* <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} /> */}
+              <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} />
             </>
           )}
         </Box>
@@ -178,5 +231,3 @@ const Components: NextPage = () => {
     </>
   )
 }
-
-export default Components

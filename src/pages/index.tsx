@@ -1,7 +1,9 @@
 import Head from 'next/head';
 import { useEffect } from 'react';
+import { useRelayEnvironment } from 'react-relay';
 
 import { loadDIDSession } from '@/lib/composeDB';
+import { getCurrentEnvironment } from '@/relay/environment';
 import { useAuth } from '@/services/hook/useAuth';
 import { Box, SimpleGrid, Text } from '@chakra-ui/react';
 
@@ -21,6 +23,11 @@ const Home: NextPage = () => {
   //     await loadDIDSession(userData)
   //     setUserData(userData)
   //   })()
+  // }, [])
+
+  // useEffect(() => {
+  //   const environment = getCurrentEnvironment()
+  //   console.log(environment)
   // }, [])
 
   return (

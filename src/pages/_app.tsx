@@ -2,7 +2,7 @@ import type { AppProps } from 'next/app'
 import { ReactRelayContext } from 'react-relay';
 
 import Layout from '@/components/Layout';
-import { environment } from '@/lib/relay';
+import { environment } from '@/relay/environment';
 import AppProvider from '@/services/providers/AppStateProvider';
 import StacksAuthProvider from '@/services/providers/StacksAuthProvider';
 import { ChakraProvider } from '@chakra-ui/react';

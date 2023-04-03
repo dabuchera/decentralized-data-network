@@ -2,9 +2,10 @@ import { useRouter } from 'next/router';
 import {
     createContext, Dispatch, PropsWithChildren, SetStateAction, useContext, useEffect, useState
 } from 'react';
+import { useRelayEnvironment } from 'react-relay';
 
-import { loadDIDSession } from '@/lib/composeDB';
 import { appDetails } from '@/lib/constants';
+import { loadDIDSession } from '@/relay/environment';
 import { AppConfig, showConnect, UserData, UserSession } from '@stacks/connect';
 import { StacksMainnet, StacksMocknet, StacksNetwork, StacksTestnet } from '@stacks/network';
 
@@ -55,11 +56,25 @@ export default function StacksProvider({ children }: PropsWithChildren<{}>) {
 
   useEffect(() => {
     if (userSession.isSignInPending()) {
+      console.log('isSignInPending')
       userSession.handlePendingSignIn().then((userData) => {
-        setUserData(userData)
-      })
+        if (userData) {
+          loadDIDSession(userData).then((session) => {
+            if (session) {
+              setUserData(userData)
+            }
+          })
+        }      })
     } else if (userSession.isUserSignedIn()) {
-      setUserData(userSession.loadUserData())
+      console.log('User Signed In')
+      const userData = userSession.loadUserData()
+      if (userData) {
+        loadDIDSession(userData).then((session) => {
+          if (session) {
+            setUserData(userData)
+          }
+        })
+      }
     }
   }, [])
 

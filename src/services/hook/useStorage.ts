@@ -10,97 +10,97 @@ import {
     useStorageMaterialpassportsQuery as MaterialpassportsType
 } from '../../__generated__/relay/useStorageMaterialpassportsQuery.graphql';
 
-//*********************** Materialpassports ***********************//
-const MaterialpassportFragment = graphql`
-  fragment useStorage_materialpassport on Materialpassport {
-    id
-    author {
-      id
-    }
-    version
-    name
-    created
-    completed
-  }
-`
+// //*********************** Materialpassports ***********************//
+// const MaterialpassportFragment = graphql`
+//   fragment useStorage_materialpassport on Materialpassport {
+//     id
+//     author {
+//       id
+//     }
+//     version
+//     name
+//     created
+//     completed
+//   }
+// `
 
-const useStorageMaterialpassportsQuery = graphql`
-  query useStorageMaterialpassportsQuery($first: Int!, $after: String) {
-    materialpassportIndex(first: $first, after: $after) @connection(key: "useStorage_materialpassportIndex") {
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-      edges {
-        node {
-          id
-          author {
-            id
-          }
-          version
-          name
-          created
-          completed
-          ...useStorage_materialpassport
-        }
-      }
-    }
-  }
-`
+// const useStorageMaterialpassportsQuery = graphql`
+//   query useStorageMaterialpassportsQuery($first: Int!, $after: String) {
+//     materialpassportIndex(first: $first, after: $after) @connection(key: "useStorage_materialpassportIndex") {
+//       pageInfo {
+//         endCursor
+//         hasNextPage
+//       }
+//       edges {
+//         node {
+//           id
+//           author {
+//             id
+//           }
+//           version
+//           name
+//           created
+//           completed
+//           ...useStorage_materialpassport
+//         }
+//       }
+//     }
+//   }
+// `
 
-//*********************** Components ***********************//
-const ComponentFragment = graphql`
-  fragment useStorage_component on Component {
-    id
-    author {
-      id
-    }
-    mpID
-    mp {
-      id
-      name
-    }
-    name
-    functionalLayer
-    actor
-    lifecyclephase
-    attributes
-    created
-    version
-  }
-`
+// //*********************** Components ***********************//
+// const ComponentFragment = graphql`
+//   fragment useStorage_component on Component {
+//     id
+//     author {
+//       id
+//     }
+//     mpID
+//     mp {
+//       id
+//       name
+//     }
+//     name
+//     functionalLayer
+//     actor
+//     lifecyclephase
+//     attributes
+//     created
+//     version
+//   }
+// `
 
-const useStorageComponentsQuery = graphql`
-  query useStorageComponentsQuery($first: Int!, $after: String) {
-    componentIndex(first: $first, after: $after) @connection(key: "useStorage_componentIndex") {
-      pageInfo {
-        endCursor
-        hasNextPage
-      }
-      edges {
-        node {
-          id
-          author {
-            id
-          }
-          mpID
-          mp {
-            id
-            name
-          }
-          name
-          functionalLayer
-          actor
-          lifecyclephase
-          attributes
-          created
-          version
-          ...useStorage_component
-        }
-      }
-    }
-  }
-`
+// const useStorageComponentsQuery = graphql`
+//   query useStorageComponentsQuery($first: Int!, $after: String) {
+//     componentIndex(first: $first, after: $after) @connection(key: "useStorage_componentIndex") {
+//       pageInfo {
+//         endCursor
+//         hasNextPage
+//       }
+//       edges {
+//         node {
+//           id
+//           author {
+//             id
+//           }
+//           mpID
+//           mp {
+//             id
+//             name
+//           }
+//           name
+//           functionalLayer
+//           actor
+//           lifecyclephase
+//           attributes
+//           created
+//           version
+//           ...useStorage_component
+//         }
+//       }
+//     }
+//   }
+// `
 
 export const useStorage = (page: number, reloadCount: number) => {
   console.log('Hook useStorage')
