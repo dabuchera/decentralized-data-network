@@ -1,11 +1,14 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { graphql, useMutation, useRelayEnvironment } from 'react-relay';
 import * as yup from 'yup';
 
-import { Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, VStack } from '@chakra-ui/react';
+import {
+    Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, useBreakpointValue, VStack
+} from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import {
@@ -40,7 +43,16 @@ const createMaterialpassportFormSchema = yup.object().shape({
 })
 
 const CreateMaterialpassport = () => {
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  });
+
+  useEffect(() => {
+    console.log(isWideVersion)
+  },[isWideVersion])
   const router = useRouter()
+  
 
   const { register, handleSubmit, formState } = useForm<MaterialpassportFormData>({
     resolver: yupResolver(createMaterialpassportFormSchema),
@@ -56,8 +68,8 @@ const CreateMaterialpassport = () => {
     // console.log('*********************** formattedDate ***********************')
     // console.log(typeof formattedDate)
     // console.log(newName)
-    const environment = useRelayEnvironment()
-    console.log(environment)
+    // const environment = useRelayEnvironment()
+    // console.log(environment)
 
     commit({
       variables: {
@@ -83,6 +95,7 @@ const CreateMaterialpassport = () => {
         console.log('*********************** createMaterialpassportCeramic ***********************')
         console.log(data)
         console.log(errors)
+        router.push('/materialpassports')
       },
     })
   }
@@ -91,7 +104,7 @@ const CreateMaterialpassport = () => {
     console.log(data)
     createMaterialpassportCeramic(data.name)
     // await createUser.mutateAsync(data);
-    router.push('/materialpassports')
+    
   }
 
   return (
@@ -100,7 +113,7 @@ const CreateMaterialpassport = () => {
         <title>Create Materialpassport | Circ</title>
       </Head>
 
-      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+      <SimpleGrid flex="1" gap="4" w="75vw" minChildWidth="320px" alignItems="flex-start">
         <Box as="form" flex="1" borderRadius={8} bg="gray.800" p={['6', '8']} onSubmit={handleSubmit(handleCreateMaterialpassport)}>
           <Heading size="lg" fontWeight="normal">
             Create Materialpassport
@@ -117,9 +130,7 @@ const CreateMaterialpassport = () => {
                   error={errors.email}
                   {...register('email')}
                 /> */}
-            </SimpleGrid>
 
-            <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
               {/* <Input
                   type="password"
                   label="Senha"

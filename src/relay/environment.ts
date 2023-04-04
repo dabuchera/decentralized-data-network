@@ -92,7 +92,6 @@ export const responseCache: QueryResponseCache | null = IS_SERVER
 // }
 
 const network = Network.create(async (request, variables) => {
-  console.log(composeClient)
   return (await composeClient.executeQuery(request.text!, variables)) as any;
 });
 

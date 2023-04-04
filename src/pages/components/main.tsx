@@ -1,47 +1,45 @@
+import { NextPage } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { AiOutlineReload } from 'react-icons/ai';
-import { RiAddLine, RiPencilLine } from 'react-icons/ri';
+import { RiAddLine } from 'react-icons/ri';
 import { RxComponent1 } from 'react-icons/rx';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 
-import { processMaterialpassports } from '@/lib/dataHandling';
+import { processComponents } from '@/lib/dataHandling';
 import { truncateMiddle } from '@/lib/utils';
-import { Materialpassport, MaterialpassportFormData } from '@/types';
+import { composeClient } from '@/relay/environment';
+import { useAuth } from '@/services/hook/useAuth';
+import { useStorage } from '@/services/hook/useStorage';
+import { ComponentFormData } from '@/types';
 import {
     Box, Button, Checkbox, Flex, Heading, Icon, Link, SimpleGrid, Spinner, Table, Tbody, Td, Text,
     Th, Thead, Tr, useBreakpointValue, useDisclosure
 } from '@chakra-ui/react';
 
-import getAllMaterialpassportsQueryNode, {
-    getAllMaterialpassportsQuery
-} from '../../__generated__/relay/getAllMaterialpassportsQuery.graphql';
-import { Pagination } from '../../components/Pagination';
-import Components from './components';
-import EditMaterialpassport from './edit';
+import getAllComponentsQueryNode, {
+    getAllComponentsQuery
+} from '../../__generated__/relay/getAllComponentsQuery.graphql';
+import Attributes from './attributes';
 
-export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpassportsQuery> }) {
-  // console.log('Materialpassports main.tsx')
-  const router = useRouter()
+export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQuery> }) {
+  console.log('Components main.tsx')
   const [page, setPage] = useState(1)
   const [reloadCount, setReloadCount] = useState(0)
+
+  console.log(composeClient.id?.toString())
 
   const [isFetching, setIsFetching] = useState(true)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isOpenComponents, onOpen: onOpenComponents, onClose: onCloseComponents } = useDisclosure()
 
-  const [materialpassportEdit, setMaterialpassportEdit] = useState<MaterialpassportFormData>()
-  const [materialpassportId, setMaterialpassportId] = useState('')
+  const [componentEdit, setComponentEdit] = useState<ComponentFormData>()
+  const [componentId, setComponentId] = useState('')
 
-  const data = usePreloadedQuery(getAllMaterialpassportsQueryNode, props.queryRef)
-  const { materialpassports } = processMaterialpassports(data, page)
-
-  console.log(data.materialpassportIndex?.edges)
-
-  // https://github.com/relayjs/relay-examples/tree/main/issue-tracker-next-v13
+  const data = usePreloadedQuery(getAllComponentsQueryNode, props.queryRef)
+  const { components } = processComponents(data, page)
 
   useEffect(() => {
     setTimeout(() => {
@@ -49,44 +47,28 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
     }, 2000)
   }, [])
 
-  // if (isFetching) {
-  //   return <Spinner size="lg" color="gray.500" />
-  // }
-
-  // const { materialpassports, isFetching, error } = useStorage(page, reloadCount)
-
-  // return (
-  //       <Suspense fallback={<Spinner size="sm" color="gray.500" ml="4" />}>
-  //         {isFetching ? <Spinner size="sm" color="gray.500" ml="4" /> : <h1>{data?.materialpassportIndex?.edges[0]?.node?.author.id}</h1>}
-  //       </Suspense>
-  //     )
-  //   }
-
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
   })
 
-  const handlePrefetch = (materialpassportId: string) => {
-    setMaterialpassportEdit(materialpassports.find((item) => item.id === materialpassportId))
-    setMaterialpassportId(materialpassportId)
-  }
-
-  const handlePrefetchComponents = (materialpassportId: string) => {
-    console.log('handlePrefetchComponents')
+  const handlePrefetch = (componentId: string) => {
+    console.log('handlePrefetch')
+    setComponentEdit(components.find((item) => item.id === componentId))
+    setComponentId(componentId)
   }
 
   return (
     <>
       <Head>
-        <title>Materialpassports | Circ</title>
+        <title>Components | Circ</title>
       </Head>
 
       <SimpleGrid flex="1" gap="4" w="75vw" minChildWidth="320px" alignItems="flex-start">
         <Box flex="1" borderRadius={8} bg="gray.800" p={['4', '4', '8']}>
           <Flex mb="8" justify="space-between" align="center">
             <Heading size="lg" fontWeight="normal">
-              Materialpassports
+              Components
               {isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
             </Heading>
 
@@ -99,14 +81,13 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
                 _hover={{ cursor: 'pointer' }}
                 leftIcon={<Icon as={AiOutlineReload} fontSize="16" />}
                 onClick={() => {
-                  router.push('/materialpassports')
-                  // setReloadCount(reloadCount + 1)
+                  setReloadCount(reloadCount + 1)
                 }}
               >
                 Update
               </Button>
 
-              <NextLink href="/materialpassports/create" passHref>
+              <NextLink href="/components/create" passHref>
                 <Button
                   as="div"
                   size="sm"
@@ -126,53 +107,74 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
               <Spinner />
             </Flex>
           ) : (
-            /* error ? (
+            /*  error ? (
             <Flex justify="center">
               <Text>Failure to obtain user data.</Text>
             </Flex>
-          ) : */
+          ) :  */
             <>
               <Table colorScheme="whiteAlpha">
                 <Thead>
                   <Tr>
                     <Th>Name</Th>
                     <Th>Created</Th>
-                    {isWideVersion && <Th>Completed</Th>}
-                    {isWideVersion && <Th>Components</Th>}
+                    <Th>Functional Layer</Th>
+                    <Th>Actor</Th>
+                    <Th>Lifecycle Phase</Th>
+                    <Th>Attributes</Th>
+
+                    {/* {isWideVersion && <Th>Attributes</Th>} */}
                     <Th w="8"></Th>
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {materialpassports?.map((materialpassport: Materialpassport) => (
-                    <Tr key={materialpassport.id}>
+                  {components?.map((component) => (
+                    <Tr key={component.id}>
                       <Td>
                         <Box>
                           <Link color="purple.400">
-                            <Text fontWeight="bold">{materialpassport.name}</Text>
+                            <Text fontWeight="bold">{component.name}</Text>
                           </Link>
                           <Text fontSize="sm" color="gray.300">
-                            {truncateMiddle(materialpassport.author_id)}
+                            {truncateMiddle(component.author_id)}
                           </Text>
                         </Box>
                       </Td>
+                      <Td>
                       <Td>
                         <Box>
                           <Text fontSize="sm" color="gray.300">
-                            {materialpassport.created}
+                            {component.created}
                           </Text>
                         </Box>
                       </Td>
-                      {isWideVersion && (
+
                       <Td>
-                        <Checkbox
-                          size="lg"
-                          iconColor="#D6BCFA"
-                          isChecked={materialpassport.completed}
-                          isDisabled={true}
-                          isFocusable={false}
-                        ></Checkbox>
+                        <Box>
+                          <Text fontSize="sm" color="gray.300">
+                            {component.functionalLayer}
+                          </Text>
+                        </Box>
                       </Td>
-                      )}
+
+                      <Td>
+                        <Box>
+                          <Text fontSize="sm" color="gray.300">
+                            {component.actor}
+                          </Text>
+                        </Box>
+                      </Td>
+
+                      <Td>
+                        <Box>
+                          <Text fontSize="sm" color="gray.300">
+                            {component.lifecyclephase}
+                          </Text>
+                        </Box>
+                      </Td>
+                      
+
+                      </Td>
                       {isWideVersion && (
                         <Td>
                           <Button
@@ -182,44 +184,34 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
                             _hover={{ cursor: 'pointer' }}
                             leftIcon={<Icon as={RxComponent1} fontSize="16" />}
                             onClick={onOpenComponents}
-                            onMouseEnter={() => handlePrefetchComponents(materialpassport.id)}
+                            onMouseEnter={() => handlePrefetch(component.id)}
                           >
-                            {isWideVersion && 'Components'}
+                            {isWideVersion && `Attributes (${component?.properties?.length})`}
                           </Button>
                         </Td>
                       )}
                       <Td>
-                        <Button
+                        {/* <Button
                           size="sm"
                           fontSize="sm"
                           colorScheme="purple"
                           _hover={{ cursor: 'pointer' }}
                           leftIcon={<Icon as={RiPencilLine} fontSize="16" />}
                           onClick={onOpen}
-                          onMouseEnter={() => handlePrefetch(materialpassport.id)}
+                          onMouseEnter={() => handlePrefetch(component.id)}
                         >
                           {isWideVersion && 'Edit'}
-                        </Button>
+                        </Button> */}
                       </Td>
                     </Tr>
                   ))}
                 </Tbody>
               </Table>
 
-              <EditMaterialpassport
-                materialpassport={materialpassportEdit}
-                materialpassportId={materialpassportId}
-                isOpen={isOpen}
-                onClose={onClose}
-              />
-              <Components
-                materialpassport={materialpassportEdit}
-                materialpassportId={materialpassportId}
-                isOpen={isOpenComponents}
-                onClose={onCloseComponents}
-              />
+              {/* <EditUser component={componentEdit} componentId={componentId} isOpen={isOpen} onClose={onClose} /> */}
+              <Attributes attributes={componentEdit?.properties} isOpen={isOpenComponents} onClose={onCloseComponents} />
 
-              <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} />
+              {/* <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} /> */}
             </>
           )}
         </Box>

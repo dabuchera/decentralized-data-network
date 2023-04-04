@@ -40,8 +40,9 @@ export default function StacksProvider({ children }: PropsWithChildren<{}>) {
       onFinish: async () => {
         const userData = userSession.loadUserData()
         await loadDIDSession(userData).then((didsession) => {
+          console.log(didsession)
           setUserData(userData)
-          // window.location.reload()
+          window.location.reload()
         })
       },
       userSession,
@@ -59,8 +60,8 @@ export default function StacksProvider({ children }: PropsWithChildren<{}>) {
       console.log('isSignInPending')
       userSession.handlePendingSignIn().then((userData) => {
         if (userData) {
-          loadDIDSession(userData).then((session) => {
-            if (session) {
+          loadDIDSession(userData).then((didsession) => {
+            if (didsession) {
               setUserData(userData)
             }
           })
@@ -69,8 +70,9 @@ export default function StacksProvider({ children }: PropsWithChildren<{}>) {
       console.log('User Signed In')
       const userData = userSession.loadUserData()
       if (userData) {
-        loadDIDSession(userData).then((session) => {
-          if (session) {
+        loadDIDSession(userData).then((didsession) => {
+          if (didsession) {
+            console.log(didsession)
             setUserData(userData)
           }
         })
@@ -84,7 +86,7 @@ export default function StacksProvider({ children }: PropsWithChildren<{}>) {
 }
 
 export function useAuthContext(fromWhere:string) {
-  console.log('useAuthContext ' + fromWhere)
+  // console.log('useAuthContext ' + fromWhere)
   const context = useContext(AuthContext)
   if (context === undefined) {
     throw new Error('useAuthContext must be used within a AuthProvider')

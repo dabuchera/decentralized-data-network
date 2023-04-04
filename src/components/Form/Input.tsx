@@ -6,15 +6,12 @@ import {
 } from '@chakra-ui/react';
 
 interface InputProps extends ChakraInputProps {
-  name: string;
-  label?: string;
-  error?: FieldError;
+  name: string
+  label?: string
+  error?: FieldError
 }
 
-const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
-  { name, label, error = null, ...rest },
-  ref
-) => {
+const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = ({ name, label, error = null, ...rest }, ref) => {
   return (
     <FormControl isInvalid={!!error}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -31,11 +28,17 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         sz="lg"
         ref={ref}
         {...rest}
-      />
+      ></ChakraInput>
 
-      {error && <FormErrorMessage>{error.message}</FormErrorMessage>}
+      {/* {error && <FormErrorMessage>{error.message}</FormErrorMessage>} */}
+      {/* Geändert so dass es ein overlay ist und nicht darunter */}
+      {error && (
+                <FormErrorMessage position="absolute" bottom="15%" left="35%">
+                    {error.message}
+                </FormErrorMessage>
+            )}
     </FormControl>
-  );
-};
+  )
+}
 
-export const Input = forwardRef(InputBase);
+export const Input = forwardRef(InputBase)

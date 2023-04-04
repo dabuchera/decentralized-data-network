@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 
-import { truncateMiddle, useSTXAddress } from '@/lib/utils';
+import { resolveSTXAddress, truncateMiddle, useSTXAddress } from '@/lib/utils';
 import { useAuthContext } from '@/services/providers/StacksAuthProvider';
 import { Avatar, Box, Button, Flex, Text } from '@chakra-ui/react';
 
@@ -43,7 +43,7 @@ export function Profile({ isWideVersion = true }: ProfileProps) {
         <>
           {isWideVersion && (
             <Button colorScheme="pink" size="md">
-              {/* {truncateMiddle(useSTXAddress())} */}
+              {truncateMiddle(resolveSTXAddress(userData))}
             </Button>
           )}
           <Button onClick={logoutLocal} colorScheme="pink" size="md">

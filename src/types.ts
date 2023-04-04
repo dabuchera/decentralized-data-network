@@ -91,10 +91,9 @@ export type MaterialpassportFormData = {
 }
 
 export type ComponentFormData = {
-  mpID: string
   name: string
   functionalLayer: FunctionalLayer
   actor: Actor
   lifecyclephase: LCP
-  properties?: { key: string; value: string }[]
+  attributes: KeyValue[]
 }

@@ -20,7 +20,8 @@ export default function useSerializablePreloadedQuery<
 >(
   environment: IEnvironment,
   preloadQuery: SerializablePreloadedQuery<TRequest, TQuery>,
-  fetchPolicy: PreloadFetchPolicy = "store-or-network"
+  // fetchPolicy: PreloadFetchPolicy = "store-or-network"
+  fetchPolicy: PreloadFetchPolicy = "network-only"
 ): PreloadedQuery<TQuery> {
   useMemo(() => {
     writePreloadedQueryToCache(preloadQuery);

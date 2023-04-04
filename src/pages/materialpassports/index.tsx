@@ -9,12 +9,11 @@ import getAllMaterialpassportsNode, {
 } from '../../__generated__/relay/getAllMaterialpassportsQuery.graphql';
 import Header from './header';
 
-const Materialpassport: NextPage = () => {
+const Materialpassports: NextPage = () => {
+  // console.log('Materialpassports index.tsx')
   const [preloadedQuery, setPreloadedQuery] = useState<SerializablePreloadedQuery<ConcreteRequest, getAllMaterialpassportsQuery> | null>(null)
-
-  console.log('Materialpassport index.tsx')
-
   useEffect(() => {
+    console.log('useEffect')
     const fetchQuery = async () => {
       const query = await loadSerializableQuery<typeof getAllMaterialpassportsNode, getAllMaterialpassportsQuery>(
         getAllMaterialpassportsNode.params,
@@ -23,15 +22,18 @@ const Materialpassport: NextPage = () => {
           after: null,
         }
       )
+      // console.log(query.response.data.materialpassportIndex.edges)
 
       setPreloadedQuery(() => query)
     }
     fetchQuery()
   }, [])
 
+  // console.log(preloadedQuery?.response.data.materialpassportIndex.edges)
+
   return preloadedQuery ? <Header preloadedQuery={preloadedQuery} /> : null
 }
 
-export default Materialpassport
+export default Materialpassports
 
 export const revalidate = 0
