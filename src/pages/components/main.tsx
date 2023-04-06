@@ -198,7 +198,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
                           _hover={{ cursor: 'pointer' }}
                           leftIcon={<Icon as={RxComponent1} fontSize="16" />}
                           onClick={onOpenAttributes}
-                          // onMouseEnter={() => handlePrefetch(component.id)}
+                          onMouseEnter={() => handlePrefetch(component.id)}
                         >
                           {isWideVersion && `Attributes (${component?.attributes?.length})`}
                         </Button>

@@ -81,7 +81,7 @@ const EditComponent = ({ component, componentId, isOpen, onClose }: EditUserProp
     if (component?.attributes) {
       setAttributes(component.attributes)
     }
-  }, [])
+  }, [component])
 
   const onAddAttribute = () => {
     setAttributes([...attributes, { key: '', value: '' }])
@@ -102,9 +102,9 @@ const EditComponent = ({ component, componentId, isOpen, onClose }: EditUserProp
       setValue('functionalLayer', component.functionalLayer)
       setValue('actor', component.actor)
       setValue('lifecyclephase', component.lifecyclephase)
-      //   setValue('attributes', component.attributes)
+      setValue('attributes', component.attributes)
     }
-  }, [component, setValue])
+  }, [component])
 
   const { errors } = formState
 

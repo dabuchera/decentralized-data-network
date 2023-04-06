@@ -6,7 +6,7 @@ import * as yup from 'yup';
 
 import {
     Box, Button, Checkbox, Divider, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter,
-    ModalHeader, ModalOverlay, Stack, VStack
+    ModalHeader, ModalOverlay, Stack, useToast, VStack
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -40,6 +40,7 @@ const editUserFormSchema = yup.object().shape({
 
 const EditMaterialpassport = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUserProps) => {
   const initialRef = useRef(null)
+  const toast = useToast()
 
   const { register, handleSubmit, formState, reset, setValue } = useForm<MaterialpassportFormData>({
     resolver: yupResolver(editUserFormSchema),
@@ -72,8 +73,8 @@ const EditMaterialpassport = ({ materialpassport, materialpassportId, isOpen, on
         updateMaterialpassport: {
           document: {
             id: existingId,
-            name: newName,
-            completed: newCompleted,
+            // name: newName,
+            // completed: newCompleted,
           },
         },
       },
@@ -81,6 +82,15 @@ const EditMaterialpassport = ({ materialpassport, materialpassportId, isOpen, on
         console.log('*********************** updateMaterialpassportName ***********************')
         console.log(data)
         console.log(errors)
+        if(errors?.[0].message.includes('Can not verify')){
+            toast({
+              title: 'No Access',
+              description: "That is not your dataset",
+              status: 'error',
+              duration: 10000,
+              isClosable: true,
+            })
+        }
       },
     })
   }

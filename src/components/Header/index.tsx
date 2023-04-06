@@ -12,28 +12,10 @@ import { SearchBox } from './SearchBox';
 export function Header() {
   const { onOpen } = useSideBarDrawer()
 
-  /*  sm: 'sm', // 480px
-    md: 'md', // 768px
-    lg: 'lg', // 992px
-    xl: 'xl', // 1280px
-    xxl: 'xxl', // 1536px */
-
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
   })
-
-  const isWideVersionTest = useBreakpointValue({
-    sm: 'sm', // 480px
-    md: 'md', // 768px
-    lg: 'lg', // 992px
-    xl: 'xl', // 1280px
-    xxl: 'xxl', // 1536px
-  })
-
-  useEffect(() => {
-    console.log(isWideVersionTest)
-  }, [isWideVersionTest])
 
   return (
     <Flex
