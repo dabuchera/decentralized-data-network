@@ -17,7 +17,7 @@ export function Profile({ isWideVersion = true }: ProfileProps) {
     router.push('/')
     setTimeout(() => {
       logout()
-    }, 250);
+    }, 1000);
   }
 
   return (

@@ -18,8 +18,8 @@ const editMaterialpassportMutation = graphql`
     updateMaterialpassport(input: { id: $id, content: { name: $name, completed: $completed } }) {
       document {
         id
-        name
-        completed
+        # name
+        # completed
       }
     }
   }
@@ -85,7 +85,7 @@ const EditMaterialpassport = ({ materialpassport, materialpassportId, isOpen, on
     })
   }
 
-  const handleCreateUser: SubmitHandler<MaterialpassportFormData> = async (data) => {
+  const handleEditMaterialpassport: SubmitHandler<MaterialpassportFormData> = async (data) => {
     // console.log(data)
     updateMaterialpassport(materialpassportId, data.name, data.completed)
     onClose()
@@ -96,11 +96,11 @@ const EditMaterialpassport = ({ materialpassport, materialpassportId, isOpen, on
     <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size={'xl'}>
       <ModalOverlay />
       <ModalContent borderRadius={8} bg="gray.800">
-        <ModalHeader fontWeight="normal">Edit Materialpassport Data</ModalHeader>
+        <ModalHeader fontWeight="normal">Edit Materialpassport</ModalHeader>
 
         <ModalCloseButton />
 
-        <Box as="form" onSubmit={handleSubmit(handleCreateUser)}>
+        <Box as="form" onSubmit={handleSubmit(handleEditMaterialpassport)}>
           <ModalBody>
             <Divider mb={6} borderColor="gray.700" />
 

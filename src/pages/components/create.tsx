@@ -1,32 +1,27 @@
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import React, { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { graphql, useMutation } from 'react-relay';
 import * as yup from 'yup';
 
 import { truncateMiddle } from '@/lib/utils';
 import { composeClient } from '@/relay/environment';
-import { useAuthContext } from '@/services/providers/StacksAuthProvider';
+import { Actor, ComponentFormData, FunctionalLayer, KeyValue, LCP } from '@/types';
 import {
-    Actor, ComponentFormData, FunctionalLayer, KeyValue, LCP, MaterialpassportFormData
-} from '@/types';
-import {
-    Box, Button, Container, Divider, Flex, Heading, HStack, Select, SimpleGrid, Text,
-    useBreakpointValue, VStack
+    Box, Button, Divider, Flex, Heading, HStack, Select, SimpleGrid, Text, useBreakpointValue,
+    VStack
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
+import { CreateComponentInput } from '../../__generated__/relay/createComponentMutation.graphql';
 import { Input } from '../../components/Form/Input';
-import { Header } from '../../components/Header';
-import { Sidebar } from '../../components/Sidebar';
-import { api } from '../../services/api';
-import { queryClient } from '../../services/queryClient';
 
 const createComponentMutation = graphql`
   mutation createComponentMutation($input: CreateComponentInput!) {
     createComponent(input: $input) {
+      # Define here what should be the response below
       document {
         id
       }
@@ -34,7 +29,7 @@ const createComponentMutation = graphql`
   }
 `
 
-const createMaterialpassportFormSchema = yup.object().shape({
+const createComponentFormSchema = yup.object().shape({
   name: yup.string().required('Name required'),
   functionalLayer: yup.string().required('Functional Layer required'),
   actor: yup.string().required('Actor required'),
@@ -44,38 +39,22 @@ const createMaterialpassportFormSchema = yup.object().shape({
       key: yup.string().required('Attribute key required'),
       value: yup.string().required('Attribute value required'),
     })
-  ),
-
-  // email: yup.string().required('E-mail obrigatório').email('E-mail inválido'),
-  // password: yup
-  //   .string()
-  //   .required('Senha obrigatória')
-  //   .min(6, 'No mínimo 6 caracteres'),
-  // password_confirmation: yup
-  //   .string()
-  //   .oneOf([null, yup.ref('password')], 'As senhas devem ser iguais'),
+  )
 })
 
 const CreateComponent = () => {
   const isWideVersion = useBreakpointValue({
     base: false,
+    md: false,
     lg: true,
-  });
+  })
 
-  useEffect(() => {
-    console.log(isWideVersion)
-  },[isWideVersion])
   const router = useRouter()
   const [attributes, setAttributes] = useState<KeyValue[]>([])
 
-  const { register, handleSubmit, formState, control, data } = useForm<ComponentFormData>({
-    resolver: yupResolver(createMaterialpassportFormSchema),
+  const { register, handleSubmit, formState, control } = useForm<ComponentFormData>({
+    resolver: yupResolver(createComponentFormSchema),
   })
-
-  // const { fields: attributeFields, append, remove} = useFieldArray({
-  //   control,
-  //   name: 'attributes',
-  // });
 
   const onAddAttribute = () => {
     // append({ key: '', value: '' })
@@ -87,7 +66,6 @@ const CreateComponent = () => {
   }
 
   const onAttributeChange = (index: number, keyOrValue: 'key' | 'value', value: string) => {
-
     setAttributes(attributes.map((attr, i) => (i === index ? { ...attr, [keyOrValue]: value } : attr)))
   }
 
@@ -95,42 +73,44 @@ const CreateComponent = () => {
 
   const [commit, isInFlight] = useMutation(createComponentMutation)
 
-  function createComponentCeramic(
-    newName: string,
-    mpID: string,
-    functionalLayer: FunctionalLayer,
-    actor: Actor,
-    lifecyclephase: LCP,
-    attributes: KeyValue[]
-  ) {
+  function createComponentCeramic(data: ComponentFormData) {
+    const date = new Date()
+    const formattedDate = date.toISOString().slice(0, 10)
     commit({
       variables: {
         input: {
-          mpID: mpID,
-          name: newName,
-          functionalLayer: functionalLayer,
-          actor: actor,
-          lifecyclephase: lifecyclephase,
-          // "[{\"key\":\"key1\",\"value\":\"value1\"},{\"key\":\"key2\",\"value\":\"value2\"}]",
-          attributes: JSON.stringify(attributes),
+          content: {
+            mpID: 'kjzl6kcym7w8y7kqkhxmunpmpdlyy5e15oj76sixf1xzs78rcbdy9vfsz4t8o4j',
+            name: data.name,
+            functionalLayer: data.functionalLayer,
+            actor: data.actor,
+            lifecyclephase: data.lifecyclephase,
+            // "[{\"key\":\"key1\",\"value\":\"value1\"},{\"key\":\"key2\",\"value\":\"value2\"}]",
+            attributes: JSON.stringify(data.attributes),
+            created: formattedDate
+          },
         },
       },
       optimisticResponse: {
-        createMaterialpassport: {
+        createComponent: {
           document: {
             id: 'temp-id', // Temporary ID, it will be replaced with the actual ID from the server response
           },
         },
       },
+      onCompleted: (data, errors) => {
+        console.log('*********************** createComponentCeramic ***********************')
+        console.log(data)
+        console.log(errors)
+        router.push('/components')
+      },
     })
   }
 
-  const handleCreateMaterialpassport: SubmitHandler<ComponentFormData> = async (data) => {
-    console.log('handleCreateMaterialpassport')
-    console.log(attributes)
+  const handleCreateComponentCeramic: SubmitHandler<ComponentFormData> = async (data) => {
     console.log(data)
-    // createComponentCeramic(data.name)
-    // router.push('/components')
+    console.log(JSON.stringify(data.attributes))
+    createComponentCeramic(data)
   }
 
   return (
@@ -140,7 +120,7 @@ const CreateComponent = () => {
       </Head>
 
       <SimpleGrid flex="1" gap="4" w="75vw" minChildWidth="320px" alignItems="flex-start">
-        <Box as="form" flex="1" borderRadius={8} bg="gray.800" p={['6', '8']} onSubmit={handleSubmit(handleCreateMaterialpassport)}>
+        <Box as="form" flex="1" borderRadius={8} bg="gray.800" p={['6', '8']} onSubmit={handleSubmit(handleCreateComponentCeramic)}>
           <Heading size="lg" fontWeight="normal">
             Create Component
           </Heading>
@@ -209,7 +189,7 @@ const CreateComponent = () => {
                 Attributes
               </Heading>
             </SimpleGrid>
-            <SimpleGrid minChildWidth="160px" maxW="50vw" columns={isWideVersion? 3 : 1} spacing={['6', '8']} w="100%" alignItems="flex-end">
+            <SimpleGrid maxW="50vw" columns={isWideVersion ? 3 : 1} spacing={['6', '8']} w="100%" alignItems="flex-end">
               {attributes.map((attr, i) => (
                 <React.Fragment key={i}>
                   <Input
@@ -253,25 +233,6 @@ const CreateComponent = () => {
               </Link>
               <Button type="submit" colorScheme="pink" isLoading={formState.isSubmitting}>
                 Save
-              </Button>
-              <Button
-                size="sm"
-                colorScheme="pink"
-                onClick={() => {
-                  console.log(attributes)
-                }}
-              >
-                Show Attribute
-              </Button>
-              <Button
-                size="sm"
-                colorScheme="pink"
-                onClick={() => {
-                  // console.log(attributeFields)
-                  console.log(formState)
-                }}
-              >
-                Show attributeFields
               </Button>
             </HStack>
           </Flex>

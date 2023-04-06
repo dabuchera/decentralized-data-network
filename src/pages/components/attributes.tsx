@@ -8,13 +8,15 @@ import {
 } from '@chakra-ui/react';
 
 type EditComponentProps = {
-  attributes?: ComponentFormData['properties']
+  attributes?: ComponentFormData['attributes']
   isOpen: boolean
   onClose: () => void
 }
 
 const Attributes = ({ attributes, isOpen, onClose }: EditComponentProps) => {
   const initialRef = useRef(null)
+
+  console.log(attributes)
 
   return (
     <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size={'xl'}>

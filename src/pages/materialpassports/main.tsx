@@ -24,9 +24,12 @@ import EditMaterialpassport from './edit';
 
 export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpassportsQuery> }) {
   // console.log('Materialpassports main.tsx')
-  const router = useRouter()
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  })
+
   const [page, setPage] = useState(1)
-  const [reloadCount, setReloadCount] = useState(0)
 
   const [isFetching, setIsFetching] = useState(true)
 
@@ -39,33 +42,13 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
   const data = usePreloadedQuery(getAllMaterialpassportsQueryNode, props.queryRef)
   const { materialpassports } = processMaterialpassports(data, page)
 
-  console.log(data.materialpassportIndex?.edges)
-
   // https://github.com/relayjs/relay-examples/tree/main/issue-tracker-next-v13
 
   useEffect(() => {
     setTimeout(() => {
       setIsFetching(false)
     }, 2000)
-  }, [])
-
-  // if (isFetching) {
-  //   return <Spinner size="lg" color="gray.500" />
-  // }
-
-  // const { materialpassports, isFetching, error } = useStorage(page, reloadCount)
-
-  // return (
-  //       <Suspense fallback={<Spinner size="sm" color="gray.500" ml="4" />}>
-  //         {isFetching ? <Spinner size="sm" color="gray.500" ml="4" /> : <h1>{data?.materialpassportIndex?.edges[0]?.node?.author.id}</h1>}
-  //       </Suspense>
-  //     )
-  //   }
-
-  const isWideVersion = useBreakpointValue({
-    base: false,
-    lg: true,
-  })
+  }, [isFetching])
 
   const handlePrefetch = (materialpassportId: string) => {
     setMaterialpassportEdit(materialpassports.find((item) => item.id === materialpassportId))
@@ -82,12 +65,11 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
         <title>Materialpassports | Circ</title>
       </Head>
 
-      <SimpleGrid flex="1" gap="4" w="75vw" minChildWidth="320px" alignItems="flex-start">
-        <Box flex="1" borderRadius={8} bg="gray.800" p={['4', '4', '8']}>
+      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+        <Box minW="70vw" flex="1" borderRadius={8} bg="gray.800" p={['4', '4', '8']}>
           <Flex mb="8" justify="space-between" align="center">
             <Heading size="lg" fontWeight="normal">
               Materialpassports
-              {isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
             </Heading>
 
             <Flex>
@@ -99,8 +81,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
                 _hover={{ cursor: 'pointer' }}
                 leftIcon={<Icon as={AiOutlineReload} fontSize="16" />}
                 onClick={() => {
-                  router.push('/materialpassports')
-                  // setReloadCount(reloadCount + 1)
+                  setIsFetching(true)
                 }}
               >
                 Update
@@ -122,8 +103,8 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
           </Flex>
 
           {isFetching ? (
-            <Flex justify="center">
-              <Spinner />
+            <Flex w="50vw" justify="center">
+              <Spinner size="xl"/>
             </Flex>
           ) : (
             /* error ? (
@@ -132,7 +113,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
             </Flex>
           ) : */
             <>
-              <Table colorScheme="whiteAlpha">
+              <Table colorScheme="whiteAlpha" size={"sm"}>
                 <Thead>
                   <Tr>
                     <Th>Name</Th>
@@ -163,15 +144,15 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
                         </Box>
                       </Td>
                       {isWideVersion && (
-                      <Td>
-                        <Checkbox
-                          size="lg"
-                          iconColor="#D6BCFA"
-                          isChecked={materialpassport.completed}
-                          isDisabled={true}
-                          isFocusable={false}
-                        ></Checkbox>
-                      </Td>
+                        <Td>
+                          <Checkbox
+                            size="lg"
+                            iconColor="#D6BCFA"
+                            isChecked={materialpassport.completed}
+                            isDisabled={true}
+                            isFocusable={false}
+                          ></Checkbox>
+                        </Td>
                       )}
                       {isWideVersion && (
                         <Td>
@@ -218,10 +199,9 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
                 isOpen={isOpenComponents}
                 onClose={onCloseComponents}
               />
-
-              <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} />
             </>
           )}
+          <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} />
         </Box>
       </SimpleGrid>
     </>

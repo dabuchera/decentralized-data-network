@@ -3,37 +3,37 @@ import Head from 'next/head';
 import NextLink from 'next/link';
 import { useEffect, useState } from 'react';
 import { AiOutlineReload } from 'react-icons/ai';
-import { RiAddLine } from 'react-icons/ri';
+import { RiAddLine, RiPencilLine } from 'react-icons/ri';
 import { RxComponent1 } from 'react-icons/rx';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 
+import { Pagination } from '@/components/Pagination';
 import { processComponents } from '@/lib/dataHandling';
 import { truncateMiddle } from '@/lib/utils';
-import { composeClient } from '@/relay/environment';
-import { useAuth } from '@/services/hook/useAuth';
-import { useStorage } from '@/services/hook/useStorage';
 import { ComponentFormData } from '@/types';
 import {
-    Box, Button, Checkbox, Flex, Heading, Icon, Link, SimpleGrid, Spinner, Table, Tbody, Td, Text,
-    Th, Thead, Tr, useBreakpointValue, useDisclosure
+    Box, Button, Flex, Heading, Icon, Link, SimpleGrid, Spinner, Table, Tbody, Td, Text, Th, Thead,
+    Tr, useBreakpointValue, useDisclosure
 } from '@chakra-ui/react';
 
 import getAllComponentsQueryNode, {
     getAllComponentsQuery
 } from '../../__generated__/relay/getAllComponentsQuery.graphql';
 import Attributes from './attributes';
+import EditComponent from './edit';
 
 export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQuery> }) {
-  console.log('Components main.tsx')
-  const [page, setPage] = useState(1)
-  const [reloadCount, setReloadCount] = useState(0)
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  })
 
-  console.log(composeClient.id?.toString())
+  const [page, setPage] = useState(1)
 
   const [isFetching, setIsFetching] = useState(true)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { isOpen: isOpenComponents, onOpen: onOpenComponents, onClose: onCloseComponents } = useDisclosure()
+  const { isOpen: isOpenComponents, onOpen: onOpenAttributes, onClose: onCloseAttributes } = useDisclosure()
 
   const [componentEdit, setComponentEdit] = useState<ComponentFormData>()
   const [componentId, setComponentId] = useState('')
@@ -45,15 +45,9 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
     setTimeout(() => {
       setIsFetching(false)
     }, 2000)
-  }, [])
-
-  const isWideVersion = useBreakpointValue({
-    base: false,
-    lg: true,
-  })
+  }, [isFetching])
 
   const handlePrefetch = (componentId: string) => {
-    console.log('handlePrefetch')
     setComponentEdit(components.find((item) => item.id === componentId))
     setComponentId(componentId)
   }
@@ -64,12 +58,11 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
         <title>Components | Circ</title>
       </Head>
 
-      <SimpleGrid flex="1" gap="4" w="75vw" minChildWidth="320px" alignItems="flex-start">
-        <Box flex="1" borderRadius={8} bg="gray.800" p={['4', '4', '8']}>
+      <SimpleGrid flex="1" gap="4" minChildWidth="320px" alignItems="flex-start">
+        <Box minW="70vw" flex="1" borderRadius={8} bg="gray.800" p={['4', '4', '8']}>
           <Flex mb="8" justify="space-between" align="center">
             <Heading size="lg" fontWeight="normal">
               Components
-              {isFetching && <Spinner size="sm" color="gray.500" ml="4" />}
             </Heading>
 
             <Flex>
@@ -81,7 +74,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
                 _hover={{ cursor: 'pointer' }}
                 leftIcon={<Icon as={AiOutlineReload} fontSize="16" />}
                 onClick={() => {
-                  setReloadCount(reloadCount + 1)
+                  setIsFetching(true)
                 }}
               >
                 Update
@@ -103,8 +96,8 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
           </Flex>
 
           {isFetching ? (
-            <Flex justify="center">
-              <Spinner />
+            <Flex w="50vw" justify="center">
+              <Spinner size="xl" />
             </Flex>
           ) : (
             /*  error ? (
@@ -113,17 +106,20 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
             </Flex>
           ) :  */
             <>
-              <Table colorScheme="whiteAlpha">
+              <Table colorScheme="whiteAlpha" size={'sm'}>
                 <Thead>
                   <Tr>
                     <Th>Name</Th>
                     <Th>Created</Th>
-                    <Th>Functional Layer</Th>
-                    <Th>Actor</Th>
-                    <Th>Lifecycle Phase</Th>
+                    <Th>MP ID</Th>
+                    {isWideVersion && (
+                      <Th>
+                        <Link color="purple.400">
+                          <Text fontWeight="bold">TO BE DEFINED</Text>
+                        </Link>
+                      </Th>
+                    )}
                     <Th>Attributes</Th>
-
-                    {/* {isWideVersion && <Th>Attributes</Th>} */}
                     <Th w="8"></Th>
                   </Tr>
                 </Thead>
@@ -131,16 +127,15 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
                   {components?.map((component) => (
                     <Tr key={component.id}>
                       <Td>
+                        <Link color="purple.400">
+                          <Text fontWeight="bold">{component.name}</Text>
+                        </Link>
                         <Box>
-                          <Link color="purple.400">
-                            <Text fontWeight="bold">{component.name}</Text>
-                          </Link>
                           <Text fontSize="sm" color="gray.300">
                             {truncateMiddle(component.author_id)}
                           </Text>
                         </Box>
                       </Td>
-                      <Td>
                       <Td>
                         <Box>
                           <Text fontSize="sm" color="gray.300">
@@ -148,50 +143,69 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
                           </Text>
                         </Box>
                       </Td>
-
                       <Td>
                         <Box>
                           <Text fontSize="sm" color="gray.300">
-                            {component.functionalLayer}
+                            {truncateMiddle(component.mpID)}
                           </Text>
                         </Box>
-                      </Td>
-
-                      <Td>
-                        <Box>
-                          <Text fontSize="sm" color="gray.300">
-                            {component.actor}
-                          </Text>
-                        </Box>
-                      </Td>
-
-                      <Td>
-                        <Box>
-                          <Text fontSize="sm" color="gray.300">
-                            {component.lifecyclephase}
-                          </Text>
-                        </Box>
-                      </Td>
-                      
-
                       </Td>
                       {isWideVersion && (
                         <Td>
-                          <Button
-                            size="sm"
-                            fontSize="sm"
-                            colorScheme="purple"
-                            _hover={{ cursor: 'pointer' }}
-                            leftIcon={<Icon as={RxComponent1} fontSize="16" />}
-                            onClick={onOpenComponents}
-                            onMouseEnter={() => handlePrefetch(component.id)}
-                          >
-                            {isWideVersion && `Attributes (${component?.properties?.length})`}
-                          </Button>
+                          <Flex justifyContent={'flex-start'}>
+                            <Box>
+                              <Text fontWeight="bold" color="gray.300" mr="2" mb="2">
+                                FUNCTIONAL LAYER:{' '}
+                              </Text>
+                            </Box>
+                            <Box>
+                              <Text fontSize="sm" color="gray.300">
+                                {component.functionalLayer}
+                              </Text>
+                            </Box>
+                          </Flex>
+                          <Flex justifyContent={'flex-start'}>
+                            <Box>
+                              <Text fontWeight="bold" color="gray.300" mr="2" mb="2">
+                                ACTOR:{' '}
+                              </Text>
+                            </Box>
+                            <Box>
+                              <Text fontSize="sm" color="gray.300">
+                                {component.actor}
+                              </Text>
+                            </Box>
+                          </Flex>
+                          <Flex justifyContent={'flex-start'}>
+                            <Box>
+                              <Text fontWeight="bold" color="gray.300" mr="2">
+                                LIFECYCLE PHASE:{' '}
+                              </Text>
+                            </Box>
+                            <Box>
+                              <Text fontSize="sm" color="gray.300">
+                                {component.lifecyclephase}
+                              </Text>
+                            </Box>
+                          </Flex>
                         </Td>
                       )}
                       <Td>
-                        {/* <Button
+                        <Button
+                          size="sm"
+                          fontSize="sm"
+                          colorScheme="purple"
+                          _hover={{ cursor: 'pointer' }}
+                          leftIcon={<Icon as={RxComponent1} fontSize="16" />}
+                          onClick={onOpenAttributes}
+                          // onMouseEnter={() => handlePrefetch(component.id)}
+                        >
+                          {isWideVersion && `Attributes (${component?.attributes?.length})`}
+                        </Button>
+                      </Td>
+
+                      <Td>
+                        <Button
                           size="sm"
                           fontSize="sm"
                           colorScheme="purple"
@@ -201,19 +215,19 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
                           onMouseEnter={() => handlePrefetch(component.id)}
                         >
                           {isWideVersion && 'Edit'}
-                        </Button> */}
+                        </Button>
                       </Td>
                     </Tr>
                   ))}
                 </Tbody>
               </Table>
 
-              {/* <EditUser component={componentEdit} componentId={componentId} isOpen={isOpen} onClose={onClose} /> */}
-              <Attributes attributes={componentEdit?.properties} isOpen={isOpenComponents} onClose={onCloseComponents} />
+              <EditComponent component={componentEdit} componentId={componentId} isOpen={isOpen} onClose={onClose} />
 
-              {/* <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} /> */}
+              <Attributes attributes={componentEdit?.attributes} isOpen={isOpenComponents} onClose={onCloseAttributes} />
             </>
           )}
+          <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} />
         </Box>
       </SimpleGrid>
     </>

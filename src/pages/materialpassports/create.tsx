@@ -20,11 +20,12 @@ import { MaterialpassportFormData } from '../../types';
 const createMaterialpassportMutation = graphql`
   mutation createMaterialpassportMutation($input: CreateMaterialpassportInput!) {
     createMaterialpassport(input: $input) {
+      # Define here what should be the response below
       document {
         id
-        name
-        completed
-        created
+        # name
+        # completed
+        # created
       }
     }
   }
@@ -85,9 +86,9 @@ const CreateMaterialpassport = () => {
         createMaterialpassport: {
           document: {
             id: 'temp-id', // Temporary ID, it will be replaced with the actual ID from the server response
-            name: newName,
-            completed: false,
-            created: formattedDate,
+            // name: newName,
+            // completed: false,
+            // created: formattedDate,
           },
         },
       },
@@ -102,9 +103,7 @@ const CreateMaterialpassport = () => {
 
   const handleCreateMaterialpassport: SubmitHandler<MaterialpassportFormData> = async (data) => {
     console.log(data)
-    createMaterialpassportCeramic(data.name)
-    // await createUser.mutateAsync(data);
-    
+    createMaterialpassportCeramic(data.name)    
   }
 
   return (

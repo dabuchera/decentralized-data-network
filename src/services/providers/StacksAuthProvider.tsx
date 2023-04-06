@@ -38,9 +38,8 @@ export default function StacksProvider({ children }: PropsWithChildren<{}>) {
     showConnect({
       appDetails,
       onFinish: async () => {
-        const userData = userSession.loadUserData()
+        const userData = await userSession.loadUserData()
         await loadDIDSession(userData).then((didsession) => {
-          console.log(didsession)
           setUserData(userData)
           window.location.reload()
         })
@@ -65,7 +64,8 @@ export default function StacksProvider({ children }: PropsWithChildren<{}>) {
               setUserData(userData)
             }
           })
-        }      })
+        }
+      })
     } else if (userSession.isUserSignedIn()) {
       console.log('User Signed In')
       const userData = userSession.loadUserData()
@@ -85,7 +85,7 @@ export default function StacksProvider({ children }: PropsWithChildren<{}>) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
-export function useAuthContext(fromWhere:string) {
+export function useAuthContext(fromWhere: string) {
   // console.log('useAuthContext ' + fromWhere)
   const context = useContext(AuthContext)
   if (context === undefined) {

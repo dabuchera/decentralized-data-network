@@ -1,146 +1,268 @@
-// import Link from 'next/link';
-// import { useEffect, useRef, useState } from 'react';
-// import { SubmitHandler, useForm } from 'react-hook-form';
-// import { graphql, useMutation } from 'react-relay';
-// import * as yup from 'yup';
+import Link from 'next/link';
+import React, { useEffect, useRef, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { graphql, useMutation } from 'react-relay';
+import * as yup from 'yup';
 
-// import {
-//     Box, Button, Divider, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter,
-//     ModalHeader, ModalOverlay, VStack
-// } from '@chakra-ui/react';
-// import { yupResolver } from '@hookform/resolvers/yup';
+import { truncateMiddle } from '@/lib/utils';
+import { composeClient } from '@/relay/environment';
+import {
+    Box, Button, Divider, Flex, Heading, HStack, Modal, ModalBody, ModalCloseButton, ModalContent,
+    ModalFooter, ModalHeader, ModalOverlay, Select, SimpleGrid, VStack
+} from '@chakra-ui/react';
+import { yupResolver } from '@hookform/resolvers/yup';
 
-// import { Input } from '../../components/Form/Input';
-// import { api } from '../../services/api';
-// import { queryClient } from '../../services/queryClient';
-// import { MaterialpassportFormData } from '../../types';
+import { Input } from '../../components/Form/Input';
+import { api } from '../../services/api';
+import { queryClient } from '../../services/queryClient';
+import { Actor, ComponentFormData, FunctionalLayer, KeyValue, LCP } from '../../types';
+import attributes from './attributes';
 
-// const editUpdateMaterialpassportMutation = graphql`
-//   mutation editUpdateMaterialpassportMutation($id: ID!, $name: String!) {
-//     updateMaterialpassport(input: { id: $id, content: { name: $name } }) {
-//       document {
-//         id
-//         author {
-//           id
-//         }
-//         name
-//         completed
-//         version
-//       }
-//     }
-//   }
-// `
+const editComponentMutation = graphql`
+  mutation editComponentMutation(
+    $id: ID!
+    $mpID: CeramicStreamID!
+    $name: String!
+    $functionalLayer: ComponentFunctionalLayer!
+    $actor: ComponentActor!
+    $lifecyclephase: ComponentLcp!
+    $attributes: String!
+  ) {
+    updateComponent(
+      input: {
+        id: $id
+        content: {
+          mpID: $mpID
+          name: $name
+          functionalLayer: $functionalLayer
+          actor: $actor
+          lifecyclephase: $lifecyclephase
+          attributes: $attributes
+        }
+      }
+    ) {
+      document {
+        id
+      }
+    }
+  }
+`
 
-// type EditUserProps = {
-//   materialpassport?: Pick<MaterialpassportFormData, 'name' | 'completed'>
-//   materialpassportId: string
-//   isOpen: boolean
-//   onClose: () => void
-// }
+type EditUserProps = {
+  component?: Pick<ComponentFormData, 'mpID' | 'name' | 'functionalLayer' | 'actor' | 'lifecyclephase' | 'attributes'>
+  componentId: string
+  isOpen: boolean
+  onClose: () => void
+}
 
-// const editUserFormSchema = yup.object().shape({
-//   name: yup.string().required('Name required'),
-//   completed: yup.boolean().required('Completed required'),
-// })
+const editUserFormSchema = yup.object().shape({
+  name: yup.string().required('Name required'),
+  functionalLayer: yup.string().required('Functional Layer required'),
+  actor: yup.string().required('Actor required'),
+  lifecyclephase: yup.string().required('Lifecyclephase required'),
+  attributes: yup.array().of(
+    yup.object().shape({
+      key: yup.string().required('Attribute key required'),
+      value: yup.string().required('Attribute value required'),
+    })
+  ),
+})
 
-// const Edit = ({ materialpassport, materialpassportId, isOpen, onClose }: EditUserProps) => {
-//   const initialRef = useRef(null)
+const EditComponent = ({ component, componentId, isOpen, onClose }: EditUserProps) => {
+  const initialRef = useRef(null)
 
-//   const { register, handleSubmit, formState, reset, setValue } = useForm<MaterialpassportFormData>({
-//     resolver: yupResolver(editUserFormSchema),
-//   })
+  const { register, handleSubmit, formState, reset, setValue } = useForm<ComponentFormData>({
+    resolver: yupResolver(editUserFormSchema),
+  })
 
-//   useEffect(() => {
-//     setValue('name', materialpassport?.name)
-//     setValue('completed', materialpassport?.completed)
-//   }, [materialpassport, setValue])
+  const [attributes, setAttributes] = useState<KeyValue[]>([])
 
-//   const { errors } = formState
+  useEffect(() => {
+    if (component?.attributes) {
+      setAttributes(component.attributes)
+    }
+  }, [])
 
-//   const [commit, isInFlight] = useMutation(editUpdateMaterialpassportMutation)
+  const onAddAttribute = () => {
+    setAttributes([...attributes, { key: '', value: '' }])
+  }
 
-//   async function updateMaterialpassportName(existingId: string, newName: string | undefined) {
-//     console.log(existingId, newName)
-//     commit({
-//       variables: {
-//         id: existingId,
-//         name: newName,
-//       },
-//       optimisticResponse: {
-//         updateMaterialpassport: {
-//           document: {
-//             id: existingId,
-//             name: newName,
-//             completed: 'temp-completed',
-//             author: {
-//               id: 'temp-author-id', // Temporary author ID, replace it with an actual value if available
-//             },
-//             version: 'temp-version', // Temporary version, replace it with an actual value if available
-//           },
-//         },
-//       },
-//     })
-//   }
+  const onRemoveAttribute = (index: number) => {
+    setAttributes(attributes.filter((_, i) => i !== index))
+  }
 
-//   const handleCreateUser: SubmitHandler<MaterialpassportFormData> = async (data) => {
-//     console.log(data)
-//     updateMaterialpassportName(materialpassportId, data.name)
-//     onClose()
-//     reset()
-//   }
+  const onAttributeChange = (index: number, keyOrValue: 'key' | 'value', value: string) => {
+    setAttributes(attributes.map((attr, i) => (i === index ? { ...attr, [keyOrValue]: value } : attr)))
+  }
 
-//   return (
-//     <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size={'xl'}>
-//       <ModalOverlay />
-//       <ModalContent borderRadius={8} bg="gray.800">
-//         <ModalHeader fontWeight="normal">Edit Materialpassport Data</ModalHeader>
+  useEffect(() => {
+    if (component) {
+      setValue('mpID', component.mpID)
+      setValue('name', component.name)
+      setValue('functionalLayer', component.functionalLayer)
+      setValue('actor', component.actor)
+      setValue('lifecyclephase', component.lifecyclephase)
+      //   setValue('attributes', component.attributes)
+    }
+  }, [component, setValue])
 
-//         <ModalCloseButton />
+  const { errors } = formState
 
-//         <Box as="form" onSubmit={handleSubmit(handleCreateUser)}>
-//           <ModalBody>
-//             <Divider mb={6} borderColor="gray.700" />
+  const [commit, isInFlight] = useMutation(editComponentMutation)
 
-//             <VStack>
-//               <Input label="Name" mb={2} error={errors.name} {...register('name')} />
-//               {/* <Input
-//                 type="email"
-//                 label="E-mail"
-//                 mb={2}
-//                 error={errors.email}
-//                 {...register('email')}
-//               />
-//               <Input
-//                 type="password"
-//                 label="Senha"
-//                 mb={2}
-//                 error={errors.password}
-//                 {...register('password')}
-//               />
-//               <Input
-//                 type="password"
-//                 label="Confirmar senha"
-//                 error={errors.password_confirmation}
-//                 {...register('password_confirmation')}
-//               /> */}
-//             </VStack>
-//           </ModalBody>
+  async function updateMaterialpassportName(existingId: string, newName: string | undefined) {
+    console.log(existingId, newName)
+    commit({
+      variables: {
+        id: existingId,
+        mpID: 'mpID',
+        name: 'name',
+        functionalLayer: 'functionalLayer',
+        actor: 'actor',
+        lifecyclephase: 'lifecyclephase',
+        attributes: 'attributes',
+      },
+      optimisticResponse: {
+        updateMaterialpassport: {
+          document: {
+            id: existingId,
+          },
+        },
+      },
+    })
+  }
 
-//           <ModalFooter pb={6}>
-//             <Button type="submit" size="sm" fontSize="sm" colorScheme="pink" _hover={{ cursor: 'pointer' }} isLoading={formState.isSubmitting}>
-//               Save
-//             </Button>
+  const handleEditComponent: SubmitHandler<ComponentFormData> = async (data) => {
+    console.log(data)
+    // updateMaterialpassportName(componentId, data.name)
+    // onClose()
+    // reset()
+  }
 
-//             <Link href="/materialpassports" passHref>
-//               <Button as="div" size="sm" fontSize="sm" ml="4" colorScheme="purple" _hover={{ cursor: 'pointer' }} onClick={onClose}>
-//                 Cancel
-//               </Button>
-//             </Link>
-//           </ModalFooter>
-//         </Box>
-//       </ModalContent>
-//     </Modal>
-//   )
-// }
+  return (
+    <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose} size={'xl'}>
+      <ModalOverlay />
+      <ModalContent borderRadius={8} bg="gray.800">
+        <ModalHeader fontWeight="normal">Edit Component</ModalHeader>
 
-// export default Edit
+        <ModalCloseButton />
+
+        <Box as="form" onSubmit={handleSubmit(handleEditComponent)}>
+          <ModalBody>
+            <Divider mb={6} borderColor="gray.700" />
+
+            <VStack spacing={['6', '8']} alignItems="flex-start">
+              <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%" alignItems="flex-end">
+                <Input label="Name" error={errors.name} {...register('name')} />
+                <Select
+                  {...register('functionalLayer')}
+                  placeholder="Select Functional Layer"
+                  variant="filled"
+                  focusBorderColor="pink.500"
+                  bgColor="gray.900"
+                  _hover={{
+                    bgColor: 'gray.900',
+                  }}
+                >
+                  {Object.keys(FunctionalLayer).map((key) => (
+                    <option key={key} value={FunctionalLayer[key as keyof typeof FunctionalLayer]}>
+                      {FunctionalLayer[key as keyof typeof FunctionalLayer]}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  {...register('actor')}
+                  placeholder="Select Actor"
+                  variant="filled"
+                  focusBorderColor="pink.500"
+                  bgColor="gray.900"
+                  _hover={{
+                    bgColor: 'gray.900',
+                  }}
+                >
+                  {Object.keys(Actor).map((key) => (
+                    <option key={key} value={Actor[key as keyof typeof Actor]}>
+                      {Actor[key as keyof typeof Actor]}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  {...register('lifecyclephase')}
+                  placeholder="Select Lifecycle Phase"
+                  variant="filled"
+                  focusBorderColor="pink.500"
+                  bgColor="gray.900"
+                  _hover={{
+                    bgColor: 'gray.900',
+                  }}
+                >
+                  {Object.keys(LCP).map((key) => (
+                    <option key={key} value={LCP[key as keyof typeof LCP]}>
+                      {LCP[key as keyof typeof LCP]}
+                    </option>
+                  ))}
+                </Select>
+                <Input name="Created" label="Created" value={new Date().toISOString().slice(0, 10)} isDisabled={true} />
+                <Input w="100%" name="Owner" label="Owner" value={truncateMiddle(composeClient.id?.toString())} isDisabled={true} />
+              </SimpleGrid>
+
+              <Divider my="6" borderColor="gray.700" />
+
+              <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%" alignItems="flex-end">
+                <Heading size="md" fontWeight="normal">
+                  Attributes
+                </Heading>
+              </SimpleGrid>
+
+               <SimpleGrid maxW="50vw" columns={3} spacing={['6', '8']} w="100%" alignItems="flex-end">
+              {attributes.map((attr, i) => (
+                <React.Fragment key={i}>
+                  <Input
+                    {...register(`attributes.${i}.key`)}
+                    label={`Key ${i}`}
+                    value={attr.key}
+                    onChange={(e) => onAttributeChange(i, 'key', e.target.value)}
+                    placeholder="Attribute key"
+                  />
+                  <Input
+                    {...register(`attributes.${i}.value`)}
+                    label={`Value ${i}`}
+                    value={attr.value}
+                    onChange={(e) => onAttributeChange(i, 'value', e.target.value)}
+                    placeholder="Attribute value"
+                  />
+                  <Button w="75%" size="md" variant="outline" colorScheme="pink" onClick={() => onRemoveAttribute(i)}>
+                    Remove
+                  </Button>
+                </React.Fragment>
+              ))}
+            </SimpleGrid>
+            </VStack>
+
+            <Flex mt={['6', '8']} justify="flex-end">
+              <HStack spacing="4">
+                <Button size="sm" colorScheme="pink" onClick={onAddAttribute}>
+                Add Attribute
+              </Button>
+              </HStack>
+            </Flex>
+          </ModalBody>
+
+          <ModalFooter pb={6}>
+            <Button type="submit" size="sm" fontSize="sm" colorScheme="pink" _hover={{ cursor: 'pointer' }} isLoading={formState.isSubmitting}>
+              Save
+            </Button>
+
+            <Link href="/components" passHref>
+              <Button as="div" size="sm" fontSize="sm" ml="4" colorScheme="purple" _hover={{ cursor: 'pointer' }} onClick={onClose}>
+                Cancel
+              </Button>
+            </Link>
+          </ModalFooter>
+        </Box>
+      </ModalContent>
+    </Modal>
+  )
+}
+
+export default EditComponent
