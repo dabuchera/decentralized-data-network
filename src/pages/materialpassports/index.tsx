@@ -12,6 +12,8 @@ import Header from './header';
 const Materialpassports: NextPage = () => {
   // console.log('Materialpassports index.tsx')
   const [preloadedQuery, setPreloadedQuery] = useState<SerializablePreloadedQuery<ConcreteRequest, getAllMaterialpassportsQuery> | null>(null)
+  // console.log(Materialpassports)
+  // console.log(preloadedQuery)
   useEffect(() => {
     console.log('useEffect')
     const fetchQuery = async () => {
@@ -22,14 +24,14 @@ const Materialpassports: NextPage = () => {
           after: null,
         }
       )
-      // console.log(query.response.data.materialpassportIndex.edges)
+      // console.log(query.response.data.materialpassportIndex.edges[0].node.name)
 
       setPreloadedQuery(() => query)
     }
     fetchQuery()
   }, [])
 
-  // console.log(preloadedQuery?.response.data.materialpassportIndex.edges)
+  console.log(preloadedQuery?.response.data.materialpassportIndex.edges.length)
 
   return preloadedQuery ? <Header preloadedQuery={preloadedQuery} /> : null
 }

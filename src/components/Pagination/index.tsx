@@ -3,50 +3,34 @@ import { Box, Button, Stack, Text, usePrevious } from '@chakra-ui/react';
 import { PaginationItem } from './PaginationItem';
 
 interface PaginationProps {
-  totalCountOfRegisters: number;
-  registersPerPage?: number;
-  currentPage?: number;
-  siblingsCount?: number;
-  onPageChange: (page: number) => void;
+  totalCountOfRegisters: number
+  registersPerPage?: number
+  currentPage?: number
+  siblingsCount?: number
+  onPageChange: (page: number) => void
 }
 
 function generatePageArrayBetween(a: number, b: number) {
   return [...new Array(b - a - 1)]
     .map((_, index) => {
-      return a + index + 1;
+      return a + index + 1
     })
-    .filter((page) => page > 0);
+    .filter((page) => page > 0)
 }
 
-export function Pagination({
-  totalCountOfRegisters,
-  registersPerPage = 10,
-  currentPage = 1,
-  siblingsCount = 1,
-  onPageChange,
-}: PaginationProps) {
-  const lastPage = Math.ceil(totalCountOfRegisters / registersPerPage);
+export function Pagination({ totalCountOfRegisters, registersPerPage = 5, currentPage = 1, siblingsCount = 1, onPageChange }: PaginationProps) {
+  const lastPage = Math.ceil(totalCountOfRegisters / registersPerPage)
 
-  const previousPages =
-    currentPage > 1
-      ? generatePageArrayBetween(currentPage - siblingsCount - 1, currentPage)
-      : [];
+  const previousPages = currentPage > 1 ? generatePageArrayBetween(currentPage - siblingsCount - 1, currentPage) : []
 
-  const nextPages =
-    currentPage < lastPage
-      ? generatePageArrayBetween(currentPage, currentPage + siblingsCount + 1)
-      : [];
+  const nextPages = currentPage < lastPage ? generatePageArrayBetween(currentPage, currentPage + siblingsCount + 1) : []
 
   return (
-    <Stack
-      direction={['column', 'column', 'row']}
-      spacing="6"
-      mt="8"
-      justify="space-between"
-      align="center"
-    >
+    <Stack direction={['column', 'column', 'row']} spacing="6" mt="8" justify="space-between" align="center">
       <Box>
-        <strong>0</strong> - <strong>10</strong> of <strong>100</strong>
+        <strong>{(currentPage - 1) * registersPerPage + 1}</strong> -{' '}
+        <strong>{currentPage * registersPerPage > totalCountOfRegisters ? totalCountOfRegisters : currentPage * registersPerPage}</strong> of{' '}
+        <strong>{totalCountOfRegisters}</strong>
       </Box>
 
       <Stack direction={'row'} spacing="2">
@@ -64,30 +48,14 @@ export function Pagination({
 
         {previousPages.length > 0 &&
           previousPages.map((page) => {
-            return (
-              <PaginationItem
-                onPageChange={onPageChange}
-                number={page}
-                key={page}
-              />
-            );
+            return <PaginationItem onPageChange={onPageChange} number={page} key={page} />
           })}
 
-        <PaginationItem
-          onPageChange={onPageChange}
-          number={currentPage}
-          isCurrent
-        />
+        <PaginationItem onPageChange={onPageChange} number={currentPage} isCurrent />
 
         {nextPages.length > 0 &&
           nextPages.map((page) => {
-            return (
-              <PaginationItem
-                onPageChange={onPageChange}
-                number={page}
-                key={page}
-              />
-            );
+            return <PaginationItem onPageChange={onPageChange} number={page} key={page} />
           })}
 
         {currentPage + siblingsCount < lastPage && (
@@ -102,5 +70,5 @@ export function Pagination({
         )}
       </Stack>
     </Stack>
-  );
+  )
 }

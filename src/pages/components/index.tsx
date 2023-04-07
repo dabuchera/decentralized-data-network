@@ -11,7 +11,8 @@ import Header from './header';
 
 const Components: NextPage = () => {
   const [preloadedQuery, setPreloadedQuery] = useState<SerializablePreloadedQuery<ConcreteRequest, getAllComponentsQuery> | null>(null)
-
+  // console.log(Components)
+  // console.log(preloadedQuery)
   useEffect(() => {
     const fetchQuery = async () => {
       const query = await loadSerializableQuery<typeof getAllComponentsNode, getAllComponentsQuery>(
@@ -26,6 +27,8 @@ const Components: NextPage = () => {
     }
     fetchQuery()
   }, [])
+
+  console.log(preloadedQuery?.response.data.componentIndex.edges.length)
 
   return preloadedQuery ? <Header preloadedQuery={preloadedQuery} /> : null
 }

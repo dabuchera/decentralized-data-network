@@ -7,7 +7,7 @@ import { graphql, useMutation, useRelayEnvironment } from 'react-relay';
 import * as yup from 'yup';
 
 import {
-    Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, useBreakpointValue, VStack
+    Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, Spinner, useBreakpointValue, VStack
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -47,13 +47,12 @@ const CreateMaterialpassport = () => {
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
-  });
+  })
 
   useEffect(() => {
     console.log(isWideVersion)
-  },[isWideVersion])
+  }, [isWideVersion])
   const router = useRouter()
-  
 
   const { register, handleSubmit, formState } = useForm<MaterialpassportFormData>({
     resolver: yupResolver(createMaterialpassportFormSchema),
@@ -93,8 +92,10 @@ const CreateMaterialpassport = () => {
         },
       },
       onCompleted: (data, errors) => {
-        console.log('*********************** createMaterialpassportCeramic ***********************')
+        console.log('******* createMaterialpassportCeramic *******')
+        console.log('******* data *******')
         console.log(data)
+        console.log('******* errors *******')
         console.log(errors)
         router.push('/materialpassports')
       },
@@ -102,8 +103,8 @@ const CreateMaterialpassport = () => {
   }
 
   const handleCreateMaterialpassport: SubmitHandler<MaterialpassportFormData> = async (data) => {
-    console.log(data)
-    createMaterialpassportCeramic(data.name)    
+    // console.log(data)
+    createMaterialpassportCeramic(data.name)
   }
 
   return (
@@ -120,17 +121,23 @@ const CreateMaterialpassport = () => {
 
           <Divider my="6" borderColor="gray.700" />
 
-          <VStack spacing={['6', '8']}>
-            <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
-              <Input label="Name" error={errors.name} {...register('name')} />
-              {/* <Input
+          {isInFlight ? (
+            <Flex justify="center">
+              <Spinner size="xl" />
+            </Flex>
+          ) : (
+            <>
+              <VStack spacing={['6', '8']}>
+                <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%">
+                  <Input label="Name" error={errors.name} {...register('name')} />
+                  {/* <Input
                   type="email"
                   label="E-mail"
                   error={errors.email}
                   {...register('email')}
                 /> */}
 
-              {/* <Input
+                  {/* <Input
                   type="password"
                   label="Senha"
                   error={errors.password}
@@ -142,21 +149,22 @@ const CreateMaterialpassport = () => {
                   error={errors.password_confirmation}
                   {...register('password_confirmation')}
                 /> */}
-            </SimpleGrid>
-          </VStack>
-
-          <Flex mt={['6', '8']} justify="flex-end">
-            <HStack spacing="4">
-              <Link href="/materialpassports" passHref>
-                <Button as="div" colorScheme="whiteAlpha">
-                  Cancel
-                </Button>
-              </Link>
-              <Button type="submit" colorScheme="pink" isLoading={formState.isSubmitting}>
-                Save
-              </Button>
-            </HStack>
-          </Flex>
+                </SimpleGrid>
+              </VStack>
+              <Flex mt={['6', '8']} justify="flex-end">
+                <HStack spacing="4">
+                  <Link href="/materialpassports" passHref>
+                    <Button as="div" colorScheme="whiteAlpha">
+                      Cancel
+                    </Button>
+                  </Link>
+                  <Button type="submit" colorScheme="pink" isLoading={formState.isSubmitting}>
+                    Save
+                  </Button>
+                </HStack>
+              </Flex>
+            </>
+          )}
         </Box>
       </SimpleGrid>
     </>

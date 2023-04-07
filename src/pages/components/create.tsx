@@ -10,8 +10,8 @@ import { truncateMiddle } from '@/lib/utils';
 import { composeClient } from '@/relay/environment';
 import { Actor, ComponentFormData, FunctionalLayer, KeyValue, LCP } from '@/types';
 import {
-    Box, Button, Divider, Flex, Heading, HStack, Select, SimpleGrid, Text, useBreakpointValue,
-    VStack
+    Box, Button, Divider, Flex, Heading, HStack, Select, SimpleGrid, Spinner, Text,
+    useBreakpointValue, VStack
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -34,12 +34,18 @@ const createComponentFormSchema = yup.object().shape({
   functionalLayer: yup.string().required('Functional Layer required'),
   actor: yup.string().required('Actor required'),
   lifecyclephase: yup.string().required('Lifecyclephase required'),
-  attributes: yup.array().of(
-    yup.object().shape({
-      key: yup.string().required('Attribute key required'),
-      value: yup.string().required('Attribute value required'),
+  attributes: yup.array().when((attributes: any[], schema: any) => {
+      return attributes && attributes.length > 1
+        ? schema.required('Attribute required')
+        : schema;
     })
-  )
+    .of(
+      yup.object().shape({
+        key: yup.string().required('Attribute key required'),
+        value: yup.string().required('Attribute value required'),
+      })
+    ),
+
 })
 
 const CreateComponent = () => {
@@ -52,9 +58,11 @@ const CreateComponent = () => {
   const router = useRouter()
   const [attributes, setAttributes] = useState<KeyValue[]>([])
 
-  const { register, handleSubmit, formState, control } = useForm<ComponentFormData>({
+  const { register, handleSubmit, formState, control, setValue, getValues } = useForm<ComponentFormData>({
     resolver: yupResolver(createComponentFormSchema),
   })
+
+  // setValue('attributes', undefined)
 
   const onAddAttribute = () => {
     // append({ key: '', value: '' })
@@ -62,6 +70,7 @@ const CreateComponent = () => {
   }
 
   const onRemoveAttribute = (index: number) => {
+    setValue('attributes', attributes.filter((_, i) => i !== index))
     setAttributes(attributes.filter((_, i) => i !== index))
   }
 
@@ -87,7 +96,7 @@ const CreateComponent = () => {
             lifecyclephase: data.lifecyclephase,
             // "[{\"key\":\"key1\",\"value\":\"value1\"},{\"key\":\"key2\",\"value\":\"value2\"}]",
             attributes: JSON.stringify(data.attributes),
-            created: formattedDate
+            created: formattedDate,
           },
         },
       },
@@ -110,7 +119,14 @@ const CreateComponent = () => {
   const handleCreateComponentCeramic: SubmitHandler<ComponentFormData> = async (data) => {
     console.log(data)
     console.log(JSON.stringify(data.attributes))
-    createComponentCeramic(data)
+    console.log(getValues())
+    setValue('attributes', data.attributes)
+    console.log(getValues())
+
+    console.log(formState.isValid)
+
+
+    // createComponentCeramic(data)
   }
 
   return (
@@ -127,115 +143,123 @@ const CreateComponent = () => {
 
           <Divider my="6" borderColor="gray.700" />
 
-          <VStack spacing={['6', '8']} alignItems="flex-start">
-            <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%" alignItems="flex-end">
-              <Input label="Name" error={errors.name} {...register('name')} />
-              <Select
-                {...register('functionalLayer')}
-                placeholder="Select Functional Layer"
-                variant="filled"
-                focusBorderColor="pink.500"
-                bgColor="gray.900"
-                _hover={{
-                  bgColor: 'gray.900',
-                }}
-              >
-                {Object.keys(FunctionalLayer).map((key) => (
-                  <option key={key} value={FunctionalLayer[key as keyof typeof FunctionalLayer]}>
-                    {FunctionalLayer[key as keyof typeof FunctionalLayer]}
-                  </option>
-                ))}
-              </Select>
-              <Select
-                {...register('actor')}
-                placeholder="Select Actor"
-                variant="filled"
-                focusBorderColor="pink.500"
-                bgColor="gray.900"
-                _hover={{
-                  bgColor: 'gray.900',
-                }}
-              >
-                {Object.keys(Actor).map((key) => (
-                  <option key={key} value={Actor[key as keyof typeof Actor]}>
-                    {Actor[key as keyof typeof Actor]}
-                  </option>
-                ))}
-              </Select>
-              <Select
-                {...register('lifecyclephase')}
-                placeholder="Select Lifecycle Phase"
-                variant="filled"
-                focusBorderColor="pink.500"
-                bgColor="gray.900"
-                _hover={{
-                  bgColor: 'gray.900',
-                }}
-              >
-                {Object.keys(LCP).map((key) => (
-                  <option key={key} value={LCP[key as keyof typeof LCP]}>
-                    {LCP[key as keyof typeof LCP]}
-                  </option>
-                ))}
-              </Select>
-              <Input name="Created" label="Created" value={new Date().toISOString().slice(0, 10)} isDisabled={true} />
-              <Input w="100%" name="Owner" label="Owner" value={truncateMiddle(composeClient.id?.toString())} isDisabled={true} />
-            </SimpleGrid>
+          {isInFlight ? (
+            <Flex justify="center">
+              <Spinner size="xl" />
+            </Flex>
+          ) : (
+            <>
+              <VStack spacing={['6', '8']} alignItems="flex-start">
+                <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%" alignItems="flex-end">
+                  <Input label="Name" error={errors.name} {...register('name')} />
+                  <Select
+                    {...register('functionalLayer')}
+                    placeholder="Select Functional Layer"
+                    variant="filled"
+                    focusBorderColor="pink.500"
+                    bgColor="gray.900"
+                    _hover={{
+                      bgColor: 'gray.900',
+                    }}
+                  >
+                    {Object.keys(FunctionalLayer).map((key) => (
+                      <option key={key} value={FunctionalLayer[key as keyof typeof FunctionalLayer]}>
+                        {FunctionalLayer[key as keyof typeof FunctionalLayer]}
+                      </option>
+                    ))}
+                  </Select>
+                  <Select
+                    {...register('actor')}
+                    placeholder="Select Actor"
+                    variant="filled"
+                    focusBorderColor="pink.500"
+                    bgColor="gray.900"
+                    _hover={{
+                      bgColor: 'gray.900',
+                    }}
+                  >
+                    {Object.keys(Actor).map((key) => (
+                      <option key={key} value={Actor[key as keyof typeof Actor]}>
+                        {Actor[key as keyof typeof Actor]}
+                      </option>
+                    ))}
+                  </Select>
+                  <Select
+                    {...register('lifecyclephase')}
+                    placeholder="Select Lifecycle Phase"
+                    variant="filled"
+                    focusBorderColor="pink.500"
+                    bgColor="gray.900"
+                    _hover={{
+                      bgColor: 'gray.900',
+                    }}
+                  >
+                    {Object.keys(LCP).map((key) => (
+                      <option key={key} value={LCP[key as keyof typeof LCP]}>
+                        {LCP[key as keyof typeof LCP]}
+                      </option>
+                    ))}
+                  </Select>
+                  <Input name="Created" label="Created" value={new Date().toISOString().slice(0, 10)} isDisabled={true} />
+                  <Input w="100%" name="Owner" label="Owner" value={truncateMiddle(composeClient.id?.toString())} isDisabled={true} />
+                </SimpleGrid>
 
-            <Divider my="6" borderColor="gray.700" />
+                <Divider my="6" borderColor="gray.700" />
 
-            <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%" alignItems="flex-end">
-              <Heading size="md" fontWeight="normal">
-                Attributes
-              </Heading>
-            </SimpleGrid>
-            <SimpleGrid maxW="50vw" columns={isWideVersion ? 3 : 1} spacing={['6', '8']} w="100%" alignItems="flex-end">
-              {attributes.map((attr, i) => (
-                <React.Fragment key={i}>
-                  <Input
-                    // name={`Key ${i}`}
-                    {...register(`attributes.${i}.key`)}
-                    label={`Key ${i}`}
-                    value={attr.key}
-                    onChange={(e) => onAttributeChange(i, 'key', e.target.value)}
-                    placeholder="Attribute key"
-                  />
-                  <Input
-                    // name={`Value ${i}`}
-                    {...register(`attributes.${i}.value`)}
-                    label={`Value ${i}`}
-                    value={attr.value}
-                    onChange={(e) => onAttributeChange(i, 'value', e.target.value)}
-                    placeholder="Attribute value"
-                  />
-                  <Button w="75%" size="md" variant="outline" colorScheme="pink" onClick={() => onRemoveAttribute(i)}>
-                    Remove
+                <SimpleGrid minChildWidth="240px" spacing={['6', '8']} w="100%" alignItems="flex-end">
+                  <Heading size="md" fontWeight="normal">
+                    Attributes
+                  </Heading>
+                </SimpleGrid>
+                <SimpleGrid maxW="50vw" columns={isWideVersion ? 3 : 1} spacing={['6', '8']} w="100%" alignItems="flex-end">
+                  {attributes.map((attr, i) => (
+                    <React.Fragment key={i}>
+                      <Input
+                        // name={`Key ${i}`}
+                        {...register(`attributes.${i}.key`)}
+                        label={`Key ${i}`}
+                        value={attr.key}
+                        onChange={(e) => onAttributeChange(i, 'key', e.target.value)}
+                        placeholder="Attribute key"
+                      />
+                      <Input
+                        // name={`Value ${i}`}
+                        {...register(`attributes.${i}.value`)}
+                        label={`Value ${i}`}
+                        value={attr.value}
+                        onChange={(e) => onAttributeChange(i, 'value', e.target.value)}
+                        placeholder="Attribute value"
+                      />
+                      <Button w="75%" size="md" variant="outline" colorScheme="pink" onClick={() => onRemoveAttribute(i)}>
+                        Remove
+                      </Button>
+                    </React.Fragment>
+                  ))}
+                </SimpleGrid>
+              </VStack>
+
+              <Flex mt={['6', '8']} justify="flex-end">
+                <HStack spacing="4">
+                  <Button size="sm" colorScheme="pink" onClick={onAddAttribute}>
+                    Add Attribute
                   </Button>
-                </React.Fragment>
-              ))}
-            </SimpleGrid>
-          </VStack>
+                </HStack>
+              </Flex>
 
-          <Flex mt={['6', '8']} justify="flex-end">
-            <HStack spacing="4">
-              <Button size="sm" colorScheme="pink" onClick={onAddAttribute}>
-                Add Attribute
-              </Button>
-            </HStack>
-          </Flex>
-
-          <Flex mt={['6', '8']} justify="flex-end">
-            <HStack spacing="4">
-              <Link href="/components" passHref>
-                <Button as="div" colorScheme="whiteAlpha">
-                  Cancel
-                </Button>
-              </Link>
-              <Button type="submit" colorScheme="pink" isLoading={formState.isSubmitting}>
-                Save
-              </Button>
-            </HStack>
-          </Flex>
+              <Flex mt={['6', '8']} justify="flex-end">
+                <HStack spacing="4">
+                  <Link href="/components" passHref>
+                    <Button as="div" colorScheme="whiteAlpha">
+                      Cancel
+                    </Button>
+                  </Link>
+                  <Button type="submit" colorScheme="pink" isLoading={formState.isSubmitting}>
+                    Save
+                  </Button>
+                </HStack>
+              </Flex>
+            </>
+          )}
         </Box>
       </SimpleGrid>
     </>

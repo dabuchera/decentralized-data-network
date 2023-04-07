@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import NextLink from 'next/link';
-import { useRouter } from 'next/router';
+import { Router, useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { AiOutlineReload } from 'react-icons/ai';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
@@ -30,6 +30,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
   })
 
   const [page, setPage] = useState(1)
+  const router = useRouter()
 
   const [isFetching, setIsFetching] = useState(true)
 
@@ -40,7 +41,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
   const [materialpassportId, setMaterialpassportId] = useState('')
 
   const data = usePreloadedQuery(getAllMaterialpassportsQueryNode, props.queryRef)
-  const { materialpassports } = processMaterialpassports(data, page)
+  const { materialpassports, totalCountMP } = processMaterialpassports(data, page)
 
   // https://github.com/relayjs/relay-examples/tree/main/issue-tracker-next-v13
 
@@ -81,6 +82,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
                 _hover={{ cursor: 'pointer' }}
                 leftIcon={<Icon as={AiOutlineReload} fontSize="16" />}
                 onClick={() => {
+                  router.push('/materialpassports')
                   setIsFetching(true)
                 }}
               >
@@ -104,7 +106,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
 
           {isFetching ? (
             <Flex w="50vw" justify="center">
-              <Spinner size="xl"/>
+              <Spinner size="xl" />
             </Flex>
           ) : (
             /* error ? (
@@ -113,7 +115,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
             </Flex>
           ) : */
             <>
-              <Table colorScheme="whiteAlpha" size={"sm"}>
+              <Table colorScheme="whiteAlpha" size={'sm'}>
                 <Thead>
                   <Tr>
                     <Th>Name</Th>
@@ -190,6 +192,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
               <EditMaterialpassport
                 materialpassport={materialpassportEdit}
                 materialpassportId={materialpassportId}
+                materialpassports={materialpassports}
                 isOpen={isOpen}
                 onClose={onClose}
               />
@@ -201,7 +204,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
               />
             </>
           )}
-          <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} />
+          <Pagination totalCountOfRegisters={totalCountMP} currentPage={page} onPageChange={setPage} />
         </Box>
       </SimpleGrid>
     </>

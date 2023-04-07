@@ -12,6 +12,7 @@ export function processMaterialpassports(dataMP: getAllMaterialpassportsQuery$da
 
   const startIndexMP = (page - 1) * 5 // Assuming 5 items per page
   const endIndexMP = startIndexMP + 5
+
   // const filteredNativeMaterialpassports = nativeMaterialpassports?.slice(startIndexMP, endIndexMP)
 
   /*We add a check for nativeMaterialpassports before calling the slice and filter methods on it.
@@ -23,7 +24,7 @@ export function processMaterialpassports(dataMP: getAllMaterialpassportsQuery$da
         .filter((materialpassport) => materialpassport !== null)
     : []
 
-  const totalCountMP = nativeMaterialpassports?.length
+  const totalCountMP = nativeMaterialpassports?.length || 0
   const materialpassports: Materialpassport[] = filteredNativeMaterialpassports.map((materialpassport) => {
     return {
       id: materialpassport?.id ?? '',
@@ -37,7 +38,7 @@ export function processMaterialpassports(dataMP: getAllMaterialpassportsQuery$da
 
   const components: Component[] = new Array()
 
-  return { materialpassports: materialpassports, components: components }
+  return { materialpassports: materialpassports, totalCountMP: totalCountMP, components: components }
 }
 
 export function processComponents(dataCP: getAllComponentsQuery$data, page: number) {
@@ -56,7 +57,7 @@ export function processComponents(dataCP: getAllComponentsQuery$data, page: numb
         // Filter out null values
         .filter((component) => component !== null)
     : []
-  const totalCount = nativeComponents?.length
+  const totalCountCP = nativeComponents?.length || 0
   const components: Component[] = filteredNativeComponents.map((component) => {
     const functionalLayer = component?.functionalLayer || FunctionalLayer.EMPTY // Set a default value if functionalLayer is empty string
     const actor = component?.actor || Actor.EMPTY // Set a default value if actor is empty string
@@ -79,7 +80,7 @@ export function processComponents(dataCP: getAllComponentsQuery$data, page: numb
     }
   })
 
-  return { components: components }
+  return { components: components, totalCountCP: totalCountCP }
 }
 
 //   //*********************** Components ***********************//

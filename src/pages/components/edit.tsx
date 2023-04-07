@@ -110,33 +110,37 @@ const EditComponent = ({ component, componentId, isOpen, onClose }: EditUserProp
 
   const [commit, isInFlight] = useMutation(editComponentMutation)
 
-  async function updateMaterialpassportName(existingId: string, newName: string | undefined) {
-    console.log(existingId, newName)
+  async function updateComponent(data: ComponentFormData) {
     commit({
       variables: {
-        id: existingId,
-        mpID: 'mpID',
-        name: 'name',
-        functionalLayer: 'functionalLayer',
-        actor: 'actor',
-        lifecyclephase: 'lifecyclephase',
-        attributes: 'attributes',
+        id: componentId,
+        mpID: data.mpID,
+        name: data.name,
+        functionalLayer: data.functionalLayer,
+        actor: data.actor,
+        lifecyclephase: data.lifecyclephase,
+        attributes: JSON.stringify(data.attributes),
       },
       optimisticResponse: {
-        updateMaterialpassport: {
+        updateComponent: {
           document: {
-            id: existingId,
+            id: componentId,
           },
         },
+      },
+      onCompleted: (data, errors) => {
+        console.log('*********************** updateComponent ***********************')
+        console.log(data)
+        console.log(errors)
+        onClose()
+        reset()
       },
     })
   }
 
   const handleEditComponent: SubmitHandler<ComponentFormData> = async (data) => {
     console.log(data)
-    // updateMaterialpassportName(componentId, data.name)
-    // onClose()
-    // reset()
+    updateComponent(data)
   }
 
   return (

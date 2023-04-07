@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { AiOutlineReload } from 'react-icons/ai';
 import { RiAddLine, RiPencilLine } from 'react-icons/ri';
@@ -29,6 +30,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
   })
 
   const [page, setPage] = useState(1)
+  const router = useRouter()
 
   const [isFetching, setIsFetching] = useState(true)
 
@@ -39,7 +41,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
   const [componentId, setComponentId] = useState('')
 
   const data = usePreloadedQuery(getAllComponentsQueryNode, props.queryRef)
-  const { components } = processComponents(data, page)
+  const { components, totalCountCP } = processComponents(data, page)
 
   useEffect(() => {
     setTimeout(() => {
@@ -74,7 +76,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
                 _hover={{ cursor: 'pointer' }}
                 leftIcon={<Icon as={AiOutlineReload} fontSize="16" />}
                 onClick={() => {
-                  setIsFetching(true)
+                  router.push('/components')
                 }}
               >
                 Update
@@ -227,7 +229,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
               <Attributes attributes={componentEdit?.attributes} isOpen={isOpenComponents} onClose={onCloseAttributes} />
             </>
           )}
-          <Pagination totalCountOfRegisters={100} currentPage={page} onPageChange={setPage} />
+          <Pagination totalCountOfRegisters={totalCountCP} currentPage={page} onPageChange={setPage} />
         </Box>
       </SimpleGrid>
     </>
