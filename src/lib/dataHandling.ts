@@ -63,6 +63,13 @@ export function processComponents(dataCP: getAllComponentsQuery$data, page: numb
     const actor = component?.actor || Actor.EMPTY // Set a default value if actor is empty string
     const lifecyclephase = component?.lifecyclephase || LCP.EMPTY // Set a default value if functionalLayer is empty string
 
+    let attributes
+    if(component?.attributes){
+      attributes = JSON.parse(component?.attributes as string)
+    }
+    else{
+      attributes = []
+    }
     return {
       id: component?.id ?? '',
       author_id: component?.author?.id ?? '',
@@ -73,7 +80,7 @@ export function processComponents(dataCP: getAllComponentsQuery$data, page: numb
       actor: actor as Actor,
       lifecyclephase: lifecyclephase as LCP,
 
-      attributes: JSON.parse(component?.attributes as string) ?? '',
+      attributes: attributes,
 
       created: component?.created ?? '',
       version: component?.version ?? '',

@@ -54,7 +54,7 @@ const EditMaterialpassport = ({ materialpassport, materialpassportId, materialpa
       setValue('name', materialpassport.name)
       setValue('completed', materialpassport.completed)
     }
-  }, [materialpassport, setValue])
+  }, [materialpassport])
 
   const { errors } = formState
 
@@ -81,17 +81,18 @@ const EditMaterialpassport = ({ materialpassport, materialpassportId, materialpa
         console.log(data)
         console.log(errors)
 
+        // Update the UI since reloading not necessary, Database Update worked here
         if (data) {
           // Has to be defined in the query above
           // @ts-ignore
           const res = data.updateMaterialpassport.document
           materialpassports = materialpassports.map((materialpassport) => {
-              if (materialpassport.id === materialpassportId) {
-                // Has to be defined in the query above
-                return { ...materialpassport, name: res.name, completed: res.completed }
-              }
-              return materialpassport
-            })
+            if (materialpassport.id === materialpassportId) {
+              // Has to be defined in the query above
+              return { ...materialpassport, name: res.name, completed: res.completed }
+            }
+            return materialpassport
+          })
 
           onClose()
           reset()

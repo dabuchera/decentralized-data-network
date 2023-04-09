@@ -33,7 +33,7 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = ({ nam
       {/* {error && <FormErrorMessage>{error.message}</FormErrorMessage>} */}
       {/* Geändert so dass es ein overlay ist und nicht darunter */}
       {error && (
-                <FormErrorMessage position="absolute" bottom="15%" left="35%">
+                <FormErrorMessage position="absolute" p='auto'>
                     {error.message}
                 </FormErrorMessage>
             )}

@@ -7,7 +7,8 @@ import { graphql, useMutation, useRelayEnvironment } from 'react-relay';
 import * as yup from 'yup';
 
 import {
-    Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, Spinner, useBreakpointValue, VStack
+    Box, Button, Divider, Flex, Heading, HStack, SimpleGrid, Spinner, useBreakpointValue, useToast,
+    VStack
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -48,6 +49,7 @@ const CreateMaterialpassport = () => {
     base: false,
     lg: true,
   })
+  const toast = useToast()
 
   useEffect(() => {
     console.log(isWideVersion)

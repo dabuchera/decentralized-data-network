@@ -14,7 +14,7 @@ import { truncateMiddle } from '@/lib/utils';
 import { ComponentFormData } from '@/types';
 import {
     Box, Button, Flex, Heading, Icon, Link, SimpleGrid, Spinner, Table, Tbody, Td, Text, Th, Thead,
-    Tr, useBreakpointValue, useDisclosure
+    Tr, useBreakpointValue, useDisclosure, useToast
 } from '@chakra-ui/react';
 
 import getAllComponentsQueryNode, {
@@ -28,6 +28,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
     base: false,
     lg: true,
   })
+  const toast = useToast()
 
   const [page, setPage] = useState(1)
   const router = useRouter()
@@ -224,7 +225,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
                 </Tbody>
               </Table>
 
-              <EditComponent component={componentEdit} componentId={componentId} isOpen={isOpen} onClose={onClose} />
+              <EditComponent component={componentEdit} componentId={componentId} components={components} isOpen={isOpen} onClose={onClose} />
 
               <Attributes attributes={componentEdit?.attributes} isOpen={isOpenComponents} onClose={onCloseAttributes} />
             </>

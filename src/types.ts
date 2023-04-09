@@ -40,7 +40,7 @@ export type Component = {
   functionalLayer: FunctionalLayer
   actor: Actor
   lifecyclephase: LCP
-  attributes?: KeyValue[]
+  attributes: KeyValue[]
   created: string
   version: string
 }
@@ -96,5 +96,5 @@ export type ComponentFormData = {
   functionalLayer: FunctionalLayer
   actor: Actor
   lifecyclephase: LCP
-  attributes?: KeyValue[]
+  attributes: KeyValue[]
 }

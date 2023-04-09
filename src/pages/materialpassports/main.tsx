@@ -12,7 +12,7 @@ import { truncateMiddle } from '@/lib/utils';
 import { Materialpassport, MaterialpassportFormData } from '@/types';
 import {
     Box, Button, Checkbox, Flex, Heading, Icon, Link, SimpleGrid, Spinner, Table, Tbody, Td, Text,
-    Th, Thead, Tr, useBreakpointValue, useDisclosure
+    Th, Thead, Tr, useBreakpointValue, useDisclosure, useToast
 } from '@chakra-ui/react';
 
 import getAllMaterialpassportsQueryNode, {
@@ -28,6 +28,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
     base: false,
     lg: true,
   })
+  const toast = useToast()
 
   const [page, setPage] = useState(1)
   const router = useRouter()
