@@ -8,10 +8,14 @@ import * as yup from 'yup';
 
 import { truncateMiddle } from '@/lib/utils';
 import { composeClient } from '@/relay/environment';
-import { Actor, ComponentFormData, FunctionalLayer, KeyValue, LCP } from '@/types';
+import { useAppContext } from '@/services/providers/AppStateProvider';
+import { useAuthContext } from '@/services/providers/StacksAuthProvider';
 import {
-    Box, Button, Divider, Flex, FormLabel, Heading, HStack, Select, SimpleGrid, Spinner, Text,
-    useBreakpointValue, useToast, VStack
+    Actor, ComponentFormData, FunctionalLayer, KeyValue, LCP, Materialpassport
+} from '@/types';
+import {
+    Box, Button, Divider, Flex, FormLabel, Heading, HStack, Menu, MenuButton, MenuItem, MenuList,
+    Select, SimpleGrid, Spinner, Text, useBreakpointValue, useToast, VStack
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -34,6 +38,7 @@ const createComponentFormSchema = yup.object().shape({
   functionalLayer: yup.string().required('Functional Layer required'),
   actor: yup.string().required('Actor required'),
   lifecyclephase: yup.string().required('Lifecyclephase required'),
+  mpID: yup.string().required('Materialpassport required'),
   attributes: yup.array().of(
     yup.object().shape({
       key: yup.string().required('Attribute key required'),
@@ -43,6 +48,7 @@ const createComponentFormSchema = yup.object().shape({
 })
 
 const CreateComponent = () => {
+  console.log('CreateComponent')
   const isWideVersion = useBreakpointValue({
     base: false,
     md: false,
@@ -58,35 +64,6 @@ const CreateComponent = () => {
   const { register, handleSubmit, formState, setValue, getValues, setError } = useForm<ComponentFormData>({
     resolver: yupResolver(createComponentFormSchema),
   })
-
-  const onAddAttribute = () => {
-    // append({ key: '', value: '' })
-    setAttributes([...attributes, { key: '', value: '' }])
-  }
-
-  const onRemoveAttribute = (index: number) => {
-    setValue(
-      'attributes',
-      attributes.filter((_, i) => i !== index)
-    )
-    setAttributes(attributes.filter((_, i) => i !== index))
-  }
-
-  const onAttributeChange = (index: number, keyOrValue: 'key' | 'value', value: string) => {
-    setAttributes(attributes.map((attr, i) => (i === index ? { ...attr, [keyOrValue]: value } : attr)))
-
-    // Update form errors
-    createComponentFormSchema
-      .validateAt(`attributes.${index}.${keyOrValue}`, { [keyOrValue]: value })
-      .then(() => {
-        // No error, remove previous error
-        setError(`attributes.${index}.${keyOrValue}`, '')
-      })
-      .catch((error) => {
-        // Update error message
-        setError(`attributes.${index}.${keyOrValue}`, error.message)
-      })
-  }
 
   const { errors } = formState
 
@@ -144,6 +121,20 @@ const CreateComponent = () => {
     // console.log(getValues().attributes)
     // console.log(formState.isValid)
     // createComponentCeramic(data)
+  }
+
+  const [pageMP, setPageMP] = useState(0)
+
+  const { appState } = useAppContext()
+
+  const itemsPerPage = 10 // Number of items to display per page
+
+  const pageCount = Math.ceil(appState?.materialpassports?.length / itemsPerPage)
+  const startIndex = pageMP * itemsPerPage
+  const endIndex = (pageMP + 1) * itemsPerPage
+
+  const onMPPageChange = (newPage: number) => {
+    setPageMP(newPage)
   }
 
   return (
@@ -229,6 +220,52 @@ const CreateComponent = () => {
                       ))}
                     </Select>
                   </Box>
+
+                  <Box>
+                    <FormLabel htmlFor="mpID">Materialpassport</FormLabel>
+                    <Box display="flex" flexDirection="row" alignItems="center">
+                      <Select
+                      id="mpID"
+                      {...register('mpID')}
+                      placeholder="Select Materialpassport"
+                      variant="filled"
+                      focusBorderColor="pink.500"
+                      bgColor="gray.900"
+                      _hover={{
+                        bgColor: 'gray.900',
+                      }}>
+                        {appState?.materialpassports?.slice(startIndex, endIndex).map((item) => (
+                          <option key={item.id} value={item.name}>
+                            {item.name}
+                          </option>
+                        ))}
+                      </Select>
+                      <Menu>
+                        <MenuButton
+                          as={Button}
+                          // size="md"
+                          // position="reltiv"
+                          top="0"
+                          right="0"
+                          // borderRadius="0"
+                          // borderWidth="0"
+                          _hover={{ bg: 'transparent' }}
+                        >
+                          <Text fontSize="xs">
+                            {pageMP + 1}/{pageCount}
+                          </Text>
+                        </MenuButton>
+                        <MenuList>
+                          {[...Array(pageCount)].map((_, i) => (
+                            <MenuItem key={i} onClick={() => onMPPageChange(i)}>
+                              {i + 1}
+                            </MenuItem>
+                          ))}
+                        </MenuList>
+                      </Menu>
+                    </Box>
+                  </Box>
+
                   <Input name="Created" label="Created" value={new Date().toISOString().slice(0, 10)} isDisabled={true} />
                   <Input w="100%" name="Owner" label="Owner" value={truncateMiddle(composeClient.id?.toString())} isDisabled={true} />
                 </SimpleGrid>

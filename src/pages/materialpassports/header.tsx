@@ -9,10 +9,10 @@ import getAllMaterialpassportsQueryNode, {
 import Main from './main';
 
 export default function Header(props: {
-  preloadedQuery: SerializablePreloadedQuery<typeof getAllMaterialpassportsQueryNode, getAllMaterialpassportsQuery>
+  preloadedQueryMaterialpassports: SerializablePreloadedQuery<typeof getAllMaterialpassportsQueryNode, getAllMaterialpassportsQuery>
 }) {
 
-  let queryRef = useSerializablePreloadedQuery(useRelayEnvironment(), props.preloadedQuery)
+  const queryRefMaterialpassports = useSerializablePreloadedQuery(useRelayEnvironment(), props.preloadedQueryMaterialpassports)
   // console.log('Materialpassports header.tsx')
-  return <Main queryRef={queryRef} />
+  return <Main queryRefMaterialpassports={queryRefMaterialpassports} />
 }

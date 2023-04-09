@@ -7,30 +7,48 @@ import loadSerializableQuery, { SerializablePreloadedQuery } from '@/relay/loadS
 import getAllComponentsNode, {
     getAllComponentsQuery
 } from '../../__generated__/relay/getAllComponentsQuery.graphql';
+import getAllMaterialpassportsNode, {
+    getAllMaterialpassportsQuery
+} from '../../__generated__/relay/getAllMaterialpassportsQuery.graphql';
 import Header from './header';
 
 const Components: NextPage = () => {
-  const [preloadedQuery, setPreloadedQuery] = useState<SerializablePreloadedQuery<ConcreteRequest, getAllComponentsQuery> | null>(null)
+  const [preloadedQueryComponents, setPreloadedQueryComponents] = useState<SerializablePreloadedQuery<ConcreteRequest, getAllComponentsQuery> | null>(
+    null
+  )
+  const [preloadedQueryMaterialpassports, setPreloadedQueryMaterialpassports] = useState<SerializablePreloadedQuery<
+    ConcreteRequest,
+    getAllMaterialpassportsQuery
+  > | null>(null)
+
   // console.log(Components)
   // console.log(preloadedQuery)
   useEffect(() => {
     const fetchQuery = async () => {
-      const query = await loadSerializableQuery<typeof getAllComponentsNode, getAllComponentsQuery>(
-        getAllComponentsNode.params,
+      const queryComponents = await loadSerializableQuery<typeof getAllComponentsNode, getAllComponentsQuery>(getAllComponentsNode.params, {
+        first: 100,
+        after: null,
+      })
+
+      const queryMaterialpassport = await loadSerializableQuery<typeof getAllMaterialpassportsNode, getAllMaterialpassportsQuery>(
+        getAllMaterialpassportsNode.params,
         {
           first: 100,
           after: null,
         }
       )
 
-      setPreloadedQuery(() => query)
+      setPreloadedQueryComponents(() => queryComponents)
+      setPreloadedQueryMaterialpassports(() => queryMaterialpassport)
     }
     fetchQuery()
   }, [])
 
-  console.log(preloadedQuery?.response.data.componentIndex.edges.length)
+  console.log(preloadedQueryComponents?.response.data.componentIndex.edges.length)
 
-  return preloadedQuery ? <Header preloadedQuery={preloadedQuery} /> : null
+  return preloadedQueryComponents && preloadedQueryMaterialpassports ? (
+    <Header preloadedQueryComponents={preloadedQueryComponents} preloadedQueryMaterialpassports={preloadedQueryMaterialpassports} />
+  ) : null
 }
 
 export default Components

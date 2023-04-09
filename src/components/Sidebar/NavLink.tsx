@@ -15,7 +15,16 @@ export function NavLink({ icon, children, href, ...rest }: NavLinkProps) {
 
   let isActive = false
 
-  if (asPath === href || asPath === rest.as) {
+  // console.log('asPath')
+  // console.log(asPath)
+
+  // console.log('href')
+  // console.log(href)
+
+  const segments = asPath.split("/");
+
+  // '/' + segments[1] === hre : This is for stuff like materialpassports/create
+  if (asPath === href || asPath === rest.as || '/' + segments[1] === href )  {
     isActive = true
   }
 

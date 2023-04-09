@@ -79,8 +79,6 @@ const EditComponent = ({ component, componentId, components, isOpen, onClose }: 
   const initialRef = useRef(null)
   const toast = useToast()
 
-  console.log(components)
-
   const { register, handleSubmit, formState, reset, setValue, getValues, setError } = useForm<ComponentFormData>({
     resolver: yupResolver(editUserFormSchema),
   })

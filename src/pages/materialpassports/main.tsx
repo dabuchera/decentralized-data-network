@@ -22,7 +22,7 @@ import { Pagination } from '../../components/Pagination';
 import Components from './components';
 import EditMaterialpassport from './edit';
 
-export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpassportsQuery> }) {
+export default function Main(props: { queryRefMaterialpassports: PreloadedQuery<getAllMaterialpassportsQuery> }) {
   // console.log('Materialpassports main.tsx')
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -41,7 +41,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllMaterialpas
   const [materialpassportEdit, setMaterialpassportEdit] = useState<MaterialpassportFormData>()
   const [materialpassportId, setMaterialpassportId] = useState('')
 
-  const data = usePreloadedQuery(getAllMaterialpassportsQueryNode, props.queryRef)
+  const data = usePreloadedQuery(getAllMaterialpassportsQueryNode, props.queryRefMaterialpassports)
   const { materialpassports, totalCountMP } = processMaterialpassports(data, page)
 
   // https://github.com/relayjs/relay-examples/tree/main/issue-tracker-next-v13

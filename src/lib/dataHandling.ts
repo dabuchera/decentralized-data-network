@@ -41,6 +41,38 @@ export function processMaterialpassports(dataMP: getAllMaterialpassportsQuery$da
   return { materialpassports: materialpassports, totalCountMP: totalCountMP, components: components }
 }
 
+// Is returning all Materialpassports for the creation of Components. The one's which are completed won't shown
+export function processMaterialpassportsForComponents(dataMP: getAllMaterialpassportsQuery$data) {
+  const nativeMaterialpassports = dataMP.materialpassportIndex?.edges?.map((edge) => edge?.node)
+  const pageInfoMP = dataMP.materialpassportIndex?.pageInfo
+
+  /*We add a check for nativeMaterialpassports before calling the slice and filter methods on it.
+   If nativeMaterialpassports is falsy, we set filteredNativeMaterialpassports to an empty array.*/
+  const filteredNativeMaterialpassports = nativeMaterialpassports
+    ? nativeMaterialpassports
+        // Filter out null values
+        .filter((materialpassport) => materialpassport !== null)
+    : []
+
+  const totalCountMP = nativeMaterialpassports?.length || 0
+  let materialpassports: Materialpassport[] = filteredNativeMaterialpassports.map((materialpassport) => {
+    return {
+      id: materialpassport?.id ?? '',
+      author_id: materialpassport?.author?.id ?? '',
+      name: materialpassport?.name ?? '',
+      completed: materialpassport?.completed ?? false,
+      created: materialpassport?.created ?? '',
+      version: materialpassport?.version ?? '',
+    }
+  })
+
+  materialpassports = materialpassports.filter((materialpassport) => {
+    return materialpassport.completed === false
+  })
+
+  return { materialpassports: materialpassports, totalCountMP: totalCountMP }
+}
+
 export function processComponents(dataCP: getAllComponentsQuery$data, page: number) {
   //*********************** Components ***********************//
   const nativeComponents = dataCP.componentIndex?.edges?.map((edge) => edge?.node)
@@ -64,10 +96,9 @@ export function processComponents(dataCP: getAllComponentsQuery$data, page: numb
     const lifecyclephase = component?.lifecyclephase || LCP.EMPTY // Set a default value if functionalLayer is empty string
 
     let attributes
-    if(component?.attributes){
+    if (component?.attributes) {
       attributes = JSON.parse(component?.attributes as string)
-    }
-    else{
+    } else {
       attributes = []
     }
     return {

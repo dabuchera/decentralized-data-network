@@ -11,13 +11,13 @@ import Header from './header';
 
 const Materialpassports: NextPage = () => {
   // console.log('Materialpassports index.tsx')
-  const [preloadedQuery, setPreloadedQuery] = useState<SerializablePreloadedQuery<ConcreteRequest, getAllMaterialpassportsQuery> | null>(null)
+  const [preloadedQueryMaterialpassports, setPreloadedQueryMaterialpassports] = useState<SerializablePreloadedQuery<ConcreteRequest, getAllMaterialpassportsQuery> | null>(null)
   // console.log(Materialpassports)
   // console.log(preloadedQuery)
   useEffect(() => {
     console.log('useEffect')
     const fetchQuery = async () => {
-      const query = await loadSerializableQuery<typeof getAllMaterialpassportsNode, getAllMaterialpassportsQuery>(
+      const queryMaterialpassport = await loadSerializableQuery<typeof getAllMaterialpassportsNode, getAllMaterialpassportsQuery>(
         getAllMaterialpassportsNode.params,
         {
           first: 100,
@@ -26,14 +26,14 @@ const Materialpassports: NextPage = () => {
       )
       // console.log(query.response.data.materialpassportIndex.edges[0].node.name)
 
-      setPreloadedQuery(() => query)
+      setPreloadedQueryMaterialpassports(() => queryMaterialpassport)
     }
     fetchQuery()
   }, [])
 
-  console.log(preloadedQuery?.response.data.materialpassportIndex.edges.length)
+  console.log(preloadedQueryMaterialpassports?.response.data.materialpassportIndex.edges.length)
 
-  return preloadedQuery ? <Header preloadedQuery={preloadedQuery} /> : null
+  return preloadedQueryMaterialpassports ? <Header preloadedQueryMaterialpassports={preloadedQueryMaterialpassports} /> : null
 }
 
 export default Materialpassports

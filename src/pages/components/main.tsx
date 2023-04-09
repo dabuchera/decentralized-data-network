@@ -9,8 +9,11 @@ import { RxComponent1 } from 'react-icons/rx';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 
 import { Pagination } from '@/components/Pagination';
-import { processComponents } from '@/lib/dataHandling';
+import {
+    processComponents, processMaterialpassports, processMaterialpassportsForComponents
+} from '@/lib/dataHandling';
 import { truncateMiddle } from '@/lib/utils';
+import { useAppContext } from '@/services/providers/AppStateProvider';
 import { ComponentFormData } from '@/types';
 import {
     Box, Button, Flex, Heading, Icon, Link, SimpleGrid, Spinner, Table, Tbody, Td, Text, Th, Thead,
@@ -20,10 +23,17 @@ import {
 import getAllComponentsQueryNode, {
     getAllComponentsQuery
 } from '../../__generated__/relay/getAllComponentsQuery.graphql';
+import getAllMaterialpassportsQueryNode, {
+    getAllMaterialpassportsQuery
+} from '../../__generated__/relay/getAllMaterialpassportsQuery.graphql';
 import Attributes from './attributes';
+import CreateComponent from './create';
 import EditComponent from './edit';
 
-export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQuery> }) {
+export default function Main(props: {
+  queryRefComponents: PreloadedQuery<getAllComponentsQuery>
+  queryRefMaterialpassports: PreloadedQuery<getAllMaterialpassportsQuery>
+}) {
   const isWideVersion = useBreakpointValue({
     base: false,
     lg: true,
@@ -33,6 +43,8 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
   const [page, setPage] = useState(1)
   const router = useRouter()
 
+  const { setAppstate, appState } = useAppContext()
+
   const [isFetching, setIsFetching] = useState(true)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -41,16 +53,25 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
   const [componentEdit, setComponentEdit] = useState<ComponentFormData>()
   const [componentId, setComponentId] = useState('')
 
-  const data = usePreloadedQuery(getAllComponentsQueryNode, props.queryRef)
-  const { components, totalCountCP } = processComponents(data, page)
+  const dataComponents = usePreloadedQuery(getAllComponentsQueryNode, props.queryRefComponents)
+  const dataMaterialpassport = usePreloadedQuery(getAllMaterialpassportsQueryNode, props.queryRefMaterialpassports)
+
+  const { components, totalCountCP } = processComponents(dataComponents, page)
+  const { materialpassports, totalCountMP } = processMaterialpassportsForComponents(dataMaterialpassport)
 
   useEffect(() => {
     setTimeout(() => {
       setIsFetching(false)
+      console.log(materialpassports)
+      setAppstate((prevState) => ({
+        ...prevState,
+        materialpassports: materialpassports,
+      }))
     }, 2000)
   }, [isFetching])
 
   const handlePrefetch = (componentId: string) => {
+    console.log(appState)
     setComponentEdit(components.find((item) => item.id === componentId))
     setComponentId(componentId)
   }
@@ -202,6 +223,7 @@ export default function Main(props: { queryRef: PreloadedQuery<getAllComponentsQ
                           leftIcon={<Icon as={RxComponent1} fontSize="16" />}
                           onClick={onOpenAttributes}
                           onMouseEnter={() => handlePrefetch(component.id)}
+                          isDisabled={component?.attributes?.length === 0}
                         >
                           {isWideVersion && `Attributes (${component?.attributes?.length})`}
                         </Button>

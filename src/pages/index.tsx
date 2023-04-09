@@ -1,10 +1,5 @@
 import Head from 'next/head';
-import { useEffect } from 'react';
-import { useRelayEnvironment } from 'react-relay';
 
-import { loadDIDSession } from '@/lib/composeDB';
-import { getCurrentEnvironment } from '@/relay/environment';
-import { useAuth } from '@/services/hook/useAuth';
 import { Box, SimpleGrid, Text } from '@chakra-ui/react';
 
 import type { NextPage } from 'next'
@@ -14,21 +9,6 @@ import type { NextPage } from 'next'
   or may not be necessary until the component has been fully mounted. */
 const Home: NextPage = () => {
   // const hasMounted = useHasMounted()
-  // const { userSession, setUserData } = useAuth()
-
-  // useEffect(() => {
-  //   // We had an error where when not reloading the app it was not working at the beginning
-  //   const userData = userSession.loadUserData();
-  //   (async () => {
-  //     await loadDIDSession(userData)
-  //     setUserData(userData)
-  //   })()
-  // }, [])
-
-  // useEffect(() => {
-  //   const environment = getCurrentEnvironment()
-  //   console.log(environment)
-  // }, [])
 
   return (
     <>
