@@ -43,7 +43,7 @@ export default function AppProvider({ children }: PropsWithChildren<{}>) {
 }
 
 export function useAppContext() {
-  console.log('useAppContext')
+  // console.log('useAppContext')
   const context = useContext(AppContext)
   if (context === undefined) {
     throw new Error('No AppContext available')

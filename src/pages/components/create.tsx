@@ -71,6 +71,8 @@ const CreateComponent = () => {
 
   function createComponentCeramic(data: ComponentFormData) {
     console.log('createComponentCeramic')
+    console.log(data)
+
     let localAttributes
     if (!data.attributes) {
       localAttributes = ''
@@ -85,7 +87,7 @@ const CreateComponent = () => {
       variables: {
         input: {
           content: {
-            mpID: 'kjzl6kcym7w8y7kqkhxmunpmpdlyy5e15oj76sixf1xzs78rcbdy9vfsz4t8o4j',
+            mpID: data.mpID,
             name: data.name,
             functionalLayer: data.functionalLayer,
             actor: data.actor,
@@ -235,7 +237,7 @@ const CreateComponent = () => {
                         bgColor: 'gray.900',
                       }}>
                         {appState?.materialpassports?.slice(startIndex, endIndex).map((item) => (
-                          <option key={item.id} value={item.name}>
+                          <option key={item.id} value={item.id}>
                             {item.name}
                           </option>
                         ))}

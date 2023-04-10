@@ -71,7 +71,6 @@ export default function Main(props: {
   }, [isFetching])
 
   const handlePrefetch = (componentId: string) => {
-    console.log(appState)
     setComponentEdit(components.find((item) => item.id === componentId))
     setComponentId(componentId)
   }
@@ -99,6 +98,7 @@ export default function Main(props: {
                 leftIcon={<Icon as={AiOutlineReload} fontSize="16" />}
                 onClick={() => {
                   router.push('/components')
+                  setIsFetching(true)
                 }}
               >
                 Update
