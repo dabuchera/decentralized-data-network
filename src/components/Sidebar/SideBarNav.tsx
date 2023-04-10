@@ -16,7 +16,7 @@ export function SideBarNav() {
           Home
         </NavLink>
         <NavLink href="/dashboard" icon={RiDashboardLine}>
-          Dashboard Comp.
+          Dashboard
         </NavLink>
         <NavLink href="/testpage" icon={RiDashboardLine}>
           Test
