@@ -1,4 +1,3 @@
-import { NextPage } from 'next';
 import Head from 'next/head';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
@@ -9,9 +8,7 @@ import { RxComponent1 } from 'react-icons/rx';
 import { PreloadedQuery, usePreloadedQuery } from 'react-relay';
 
 import { Pagination } from '@/components/Pagination';
-import {
-    processComponents, processMaterialpassports, processMaterialpassportsForComponents
-} from '@/lib/dataHandling';
+import { processComponents, processMaterialpassportsForComponents } from '@/lib/dataHandling';
 import { truncateMiddle } from '@/lib/utils';
 import { useAppContext } from '@/services/providers/AppStateProvider';
 import { ComponentFormData } from '@/types';
@@ -20,18 +17,17 @@ import {
     Tr, useBreakpointValue, useDisclosure, useToast
 } from '@chakra-ui/react';
 
-import getAllComponentsQueryNode, {
-    getAllComponentsQuery
-} from '../../__generated__/relay/getAllComponentsQuery.graphql';
 import getAllMaterialpassportsQueryNode, {
     getAllMaterialpassportsQuery
 } from '../../__generated__/relay/getAllMaterialpassportsQuery.graphql';
-import Attributes from './attributes';
-import CreateComponent from './create';
+import getAllPersonalComponentsQueryNode, {
+    getAllPersonalComponentsQuery
+} from '../../__generated__/relay/getAllPersonalComponentsQuery.graphql';
+import Attributes from '../dashboard/attributes';
 import EditComponent from './edit';
 
 export default function Main(props: {
-  queryRefComponents: PreloadedQuery<getAllComponentsQuery>
+  queryRefComponents: PreloadedQuery<getAllPersonalComponentsQuery>
   queryRefMaterialpassports: PreloadedQuery<getAllMaterialpassportsQuery>
 }) {
   const isWideVersion = useBreakpointValue({
@@ -48,12 +44,14 @@ export default function Main(props: {
   const [isFetching, setIsFetching] = useState(true)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const { isOpen: isOpenComponents, onOpen: onOpenAttributes, onClose: onCloseAttributes } = useDisclosure()
+  const { isOpen: isOpenAttributes, onOpen: onOpenAttributes, onClose: onCloseAttributes } = useDisclosure()
 
   const [componentEdit, setComponentEdit] = useState<ComponentFormData>()
   const [componentId, setComponentId] = useState('')
 
-  const dataComponents = usePreloadedQuery(getAllComponentsQueryNode, props.queryRefComponents)
+  const dataComponents = usePreloadedQuery(getAllPersonalComponentsQueryNode, props.queryRefComponents)
+  console.log(dataComponents)
+
   const dataMaterialpassport = usePreloadedQuery(getAllMaterialpassportsQueryNode, props.queryRefMaterialpassports)
 
   const { components, totalCountCP } = processComponents(dataComponents, page)
@@ -62,7 +60,6 @@ export default function Main(props: {
   useEffect(() => {
     setTimeout(() => {
       setIsFetching(false)
-      console.log(materialpassports)
       setAppstate((prevState) => ({
         ...prevState,
         materialpassports: materialpassports,
@@ -74,7 +71,7 @@ export default function Main(props: {
     setComponentEdit(components.find((item) => item.id === componentId))
     setComponentId(componentId)
   }
-
+  
   return (
     <>
       <Head>
@@ -249,7 +246,7 @@ export default function Main(props: {
 
               <EditComponent component={componentEdit} componentId={componentId} components={components} isOpen={isOpen} onClose={onClose} />
 
-              <Attributes attributes={componentEdit?.attributes} isOpen={isOpenComponents} onClose={onCloseAttributes} />
+              <Attributes attributes={componentEdit?.attributes} isOpen={isOpenAttributes} onClose={onCloseAttributes} />
             </>
           )}
           <Pagination totalCountOfRegisters={totalCountCP} currentPage={page} onPageChange={setPage} />

@@ -2,13 +2,27 @@ import { getAllComponentsQuery$data } from '@/__generated__/relay/getAllComponen
 import {
     getAllMaterialpassportsQuery$data
 } from '@/__generated__/relay/getAllMaterialpassportsQuery.graphql';
+import {
+    getAllPersonalComponentsQuery$data
+} from '@/__generated__/relay/getAllPersonalComponentsQuery.graphql';
+import {
+    getAllPersonalMaterialpassportsQuery$data
+} from '@/__generated__/relay/getAllPersonalMaterialpassportsQuery.graphql';
 import { Actor, Component, FunctionalLayer, LCP, Materialpassport } from '@/types';
 
-export function processMaterialpassports(dataMP: getAllMaterialpassportsQuery$data, page: number) {
-  //*********************** Materialpassports ***********************//
-  // Not used yet -> Could be added to Return
-  const nativeMaterialpassports = dataMP.materialpassportIndex?.edges?.map((edge) => edge?.node)
-  const pageInfoMP = dataMP.materialpassportIndex?.pageInfo
+export function processMaterialpassports(dataMP: getAllMaterialpassportsQuery$data | getAllPersonalMaterialpassportsQuery$data, page: number) {
+  let nativeMaterialpassports
+  let pageInfoMP
+  // Case getAllPersonalMaterialpassportsQuery$data
+  if( dataMP.viewer){
+    nativeMaterialpassports = dataMP.viewer.materialpassportList?.edges?.map((edge) => edge?.node)
+    pageInfoMP = dataMP.viewer.materialpassportList?.pageInfo
+  }
+  // Case getAllMaterialpassportsQuery$data
+  else{
+    nativeMaterialpassports = dataMP.materialpassportIndex?.edges?.map((edge) => edge?.node)
+    pageInfoMP = dataMP.materialpassportIndex?.pageInfo
+  }
 
   const startIndexMP = (page - 1) * 5 // Assuming 5 items per page
   const endIndexMP = startIndexMP + 5
@@ -73,10 +87,20 @@ export function processMaterialpassportsForComponents(dataMP: getAllMaterialpass
   return { materialpassports: materialpassports, totalCountMP: totalCountMP }
 }
 
-export function processComponents(dataCP: getAllComponentsQuery$data, page: number) {
-  //*********************** Components ***********************//
-  const nativeComponents = dataCP.componentIndex?.edges?.map((edge) => edge?.node)
-  const pageInfoCP = dataCP.componentIndex?.pageInfo
+export function processComponents(dataCP: getAllComponentsQuery$data | getAllPersonalComponentsQuery$data, page: number) {
+  let nativeComponents
+  let pageInfoCP
+  // Case getAllPersonalMaterialpassportsQuery$data
+  if( dataCP.viewer){
+    nativeComponents = dataCP.viewer.componentList?.edges?.map((edge) => edge?.node)
+    pageInfoCP = dataCP.viewer.componentList?.pageInfo
+  }
+  // Case getAllMaterialpassportsQuery$data
+  else{
+    nativeComponents = dataCP.componentIndex?.edges?.map((edge) => edge?.node)
+    pageInfoCP = dataCP.componentIndex?.pageInfo
+  }
+  console.log(nativeComponents)
 
   const startIndexCP = (page - 1) * 5 // Assuming 5 items per page
   const endIndexCP = startIndexCP + 5

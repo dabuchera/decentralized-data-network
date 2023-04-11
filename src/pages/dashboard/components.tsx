@@ -15,7 +15,7 @@ type EditUserProps = {
   onClose: () => void
 }
 
-const Components = ({ isOpen, onClose }: EditUserProps) => {
+const ComponentsModal = ({ isOpen, onClose }: EditUserProps) => {
   const initialRef = useRef(null)
 
   return (
@@ -72,4 +72,4 @@ const Components = ({ isOpen, onClose }: EditUserProps) => {
   )
 }
 
-export default Components
+export default ComponentsModal

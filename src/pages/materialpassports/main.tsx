@@ -15,14 +15,14 @@ import {
     Th, Thead, Tr, useBreakpointValue, useDisclosure, useToast
 } from '@chakra-ui/react';
 
-import getAllMaterialpassportsQueryNode, {
-    getAllMaterialpassportsQuery
-} from '../../__generated__/relay/getAllMaterialpassportsQuery.graphql';
+import getAllPersonalMaterialpassportsQueryNode, {
+    getAllPersonalMaterialpassportsQuery
+} from '../../__generated__/relay/getAllPersonalMaterialpassportsQuery.graphql';
 import { Pagination } from '../../components/Pagination';
-import Components from './components';
+import ComponentsModal from '../dashboard/components';
 import EditMaterialpassport from './edit';
 
-export default function Main(props: { queryRefMaterialpassports: PreloadedQuery<getAllMaterialpassportsQuery> }) {
+export default function Main(props: { queryRefMaterialpassports: PreloadedQuery<getAllPersonalMaterialpassportsQuery> }) {
   // console.log('Materialpassports main.tsx')
   const isWideVersion = useBreakpointValue({
     base: false,
@@ -35,13 +35,14 @@ export default function Main(props: { queryRefMaterialpassports: PreloadedQuery<
 
   const [isFetching, setIsFetching] = useState(true)
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen: isOpenEdit, onOpen: onOpenEdit, onClose: onCloseEdit } = useDisclosure()
   const { isOpen: isOpenComponents, onOpen: onOpenComponents, onClose: onCloseComponents } = useDisclosure()
 
   const [materialpassportEdit, setMaterialpassportEdit] = useState<MaterialpassportFormData>()
   const [materialpassportId, setMaterialpassportId] = useState('')
 
-  const data = usePreloadedQuery(getAllMaterialpassportsQueryNode, props.queryRefMaterialpassports)
+  const data = usePreloadedQuery(getAllPersonalMaterialpassportsQueryNode, props.queryRefMaterialpassports)
+  console.log(data)
   const { materialpassports, totalCountMP } = processMaterialpassports(data, page)
 
   // https://github.com/relayjs/relay-examples/tree/main/issue-tracker-next-v13
@@ -52,13 +53,9 @@ export default function Main(props: { queryRefMaterialpassports: PreloadedQuery<
     }, 2000)
   }, [isFetching])
 
-  const handlePrefetch = (materialpassportId: string) => {
+  const handlePrefetchMaterialpassport = (materialpassportId: string) => {
     setMaterialpassportEdit(materialpassports.find((item) => item.id === materialpassportId))
     setMaterialpassportId(materialpassportId)
-  }
-
-  const handlePrefetchComponents = (materialpassportId: string) => {
-    console.log('handlePrefetchComponents')
   }
 
   return (
@@ -166,7 +163,7 @@ export default function Main(props: { queryRefMaterialpassports: PreloadedQuery<
                             _hover={{ cursor: 'pointer' }}
                             leftIcon={<Icon as={RxComponent1} fontSize="16" />}
                             onClick={onOpenComponents}
-                            onMouseEnter={() => handlePrefetchComponents(materialpassport.id)}
+                            onMouseEnter={() => handlePrefetchMaterialpassport(materialpassport.id)}
                           >
                             {isWideVersion && 'Components'}
                           </Button>
@@ -179,8 +176,8 @@ export default function Main(props: { queryRefMaterialpassports: PreloadedQuery<
                           colorScheme="purple"
                           _hover={{ cursor: 'pointer' }}
                           leftIcon={<Icon as={RiPencilLine} fontSize="16" />}
-                          onClick={onOpen}
-                          onMouseEnter={() => handlePrefetch(materialpassport.id)}
+                          onClick={onOpenEdit}
+                          onMouseEnter={() => handlePrefetchMaterialpassport(materialpassport.id)}
                         >
                           {isWideVersion && 'Edit'}
                         </Button>
@@ -194,10 +191,10 @@ export default function Main(props: { queryRefMaterialpassports: PreloadedQuery<
                 materialpassport={materialpassportEdit}
                 materialpassportId={materialpassportId}
                 materialpassports={materialpassports}
-                isOpen={isOpen}
-                onClose={onClose}
+                isOpen={isOpenEdit}
+                onClose={onCloseEdit}
               />
-              <Components
+              <ComponentsModal
                 materialpassport={materialpassportEdit}
                 materialpassportId={materialpassportId}
                 isOpen={isOpenComponents}

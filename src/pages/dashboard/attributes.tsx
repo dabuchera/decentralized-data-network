@@ -52,7 +52,7 @@ const Attributes = ({ attributes, isOpen, onClose }: EditComponentProps) => {
         </ModalBody>
 
         <ModalFooter pb={6}>
-          <Link href="/components" passHref>
+          <Link href="/dashboard" passHref>
             <Button as="div" size="sm" fontSize="sm" ml="4" colorScheme="purple" _hover={{ cursor: 'pointer' }} onClick={onClose}>
               Close
             </Button>

@@ -3,13 +3,13 @@ import { useRelayEnvironment } from 'react-relay';
 import { SerializablePreloadedQuery } from '@/relay/loadSerializableQuery';
 import useSerializablePreloadedQuery from '@/relay/useSerializablePreloadedQuery';
 
-import getAllMaterialpassportsQueryNode, {
-    getAllMaterialpassportsQuery
-} from '../../__generated__/relay/getAllMaterialpassportsQuery.graphql';
+import getAllPersonalMaterialpassportsQueryNode, {
+    getAllPersonalMaterialpassportsQuery
+} from '../../__generated__/relay/getAllPersonalMaterialpassportsQuery.graphql';
 import Main from './main';
 
 export default function Header(props: {
-  preloadedQueryMaterialpassports: SerializablePreloadedQuery<typeof getAllMaterialpassportsQueryNode, getAllMaterialpassportsQuery>
+  preloadedQueryMaterialpassports: SerializablePreloadedQuery<typeof getAllPersonalMaterialpassportsQueryNode, getAllPersonalMaterialpassportsQuery>
 }) {
 
   const queryRefMaterialpassports = useSerializablePreloadedQuery(useRelayEnvironment(), props.preloadedQueryMaterialpassports)
